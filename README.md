@@ -123,3 +123,51 @@ A serious production-level social platform where users can anonymously share emo
 - Performance Optimization
 
 ---
+src/
+├── app/
+│   └── api/
+│
+├── lib/
+│   ├── prisma.ts
+│   ├── auth.ts
+│   └── mail.ts
+│
+├── validations/
+│   ├── auth.ts
+│   ├── post.ts
+│   └── comment.ts
+│
+├── services/
+│   ├── auth.service.ts
+│   ├── post.service.ts
+│   └── friend.service.ts
+│
+└── generated/
+---
+app/
+├── api/
+│   ├── auth/
+│   │   ├── register/
+│   │   │   └── route.ts
+│   │   ├── login/
+│   │   │   └── route.ts
+│   │   ├── forgot-password/
+│   │   │   └── route.ts
+│   │   └── verify-email/
+│   │       └── route.ts
+│   │
+│   ├── posts/
+│   │   ├── route.ts
+│   │   └── [postId]/
+│   │       └── route.ts
+│   │
+│   ├── comments/
+│   │   └── route.ts
+│   │
+│   └── friends/
+│       ├── request/
+│       │   └── route.ts
+│       └── accept/
+│           └── route.ts
+│
+└── ...
