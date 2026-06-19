@@ -123,6 +123,7 @@ A serious production-level social platform where users can anonymously share emo
 - Performance Optimization
 
 ---
+```bash
 src/
 ├── app/
 │   └── api/
@@ -143,7 +144,10 @@ src/
 │   └── friend.service.ts
 │
 └── generated/
+```
 ---
+
+```bash
 app/
 ├── api/
 │   ├── auth/
@@ -171,3 +175,4 @@ app/
 │           └── route.ts
 │
 └── ...
+```
