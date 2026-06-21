@@ -3,7 +3,8 @@ import { userSignUp } from "@/validations/auth"
 import bcrypt from "bcryptjs"
 
 export async function POST(req: Request){
-    const body = await req.json()
+    try{
+        const body = await req.json()
 
     const parseBody = userSignUp.safeParse(body)
     if(!parseBody.success){
@@ -18,7 +19,8 @@ export async function POST(req: Request){
 
     const existingUser = await prisma.user.findUnique({
         where :{
-            email : email
+            email : email,
+            username : username
         }
     })
 
@@ -30,13 +32,13 @@ export async function POST(req: Request){
         })
     }
 
-    const hashpassword = await bcrypt.hash(password, 10)
+    const hashedpassword = await bcrypt.hash(password, 10)
 
     const user = await prisma.user.create({
         data : {
-            email : email,
-            username : username,
-            password : hashpassword
+            email,
+            username,
+            password : hashedpassword
         }
     })
 
@@ -50,4 +52,14 @@ export async function POST(req: Request){
     },{
         status : 201
     })
+    } catch(error){
+        if( error instanceof Error){
+            return Response.json({
+            message : "Internal server error",
+            error : error.message
+        },{
+            status : 500
+        })
+        }
+    }
 }

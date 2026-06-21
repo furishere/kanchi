@@ -17,3 +17,16 @@ export const userSignUp = z.object({
 }) 
 
 export type UserSignUpType = z.infer<typeof userSignUp>
+
+export const userSignIn = z.object({
+    email : z
+        .string()
+        .email()
+        .trim(),
+    password : z
+        .string()
+        .trim()
+        .min(8)
+})
+
+export type userSignIn = z.infer<typeof userSignIn>
