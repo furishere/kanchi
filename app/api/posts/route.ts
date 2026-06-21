@@ -48,7 +48,7 @@ export async function POST(req: Request){
     }
 }
 
-export async function GET(){
+export async function GET(req : Request){
     try {
         const user = await getCurrentUser()
 
@@ -58,20 +58,38 @@ export async function GET(){
             },
             orderBy : {
                 createdAt : "desc"
+            },
+            select : {
+                id : true,
+                content : true,
+                tags : true,
+                createdAt : true,
+                comments : {
+                    select : {
+                        id : true,
+                        content : true,
+                        createdAt : true
+                    }
+                }
             }
         })
 
         return Response.json({
             userPosts,
+        },{
+            status : 200
         })
     }catch(error){
-        if(error instanceof Error){
-            return Response.json({
-                message : "internal server error",
-                error : error.message
-            },{
-                status : 500
-            })
-        }
+        console.error(error)
+        return Response.json({
+            message : "Internal server error"
+        },{
+            status : 500
+        })
     }
 } 
+
+export async function DELETE(req : Request){
+    const user = await getCurrentUser()
+
+}
