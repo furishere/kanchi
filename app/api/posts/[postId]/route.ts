@@ -15,10 +15,18 @@ export async function GET(
         where : {
             id : postId
         },include : {
-            comments : true,
+            comments : {
+                select :{
+                    id : true,
+                    content : true,
+                    createdAt : true
+                }
+            },
             user : {
                 select : {
-                    username : true
+                    id: true,
+                    username : true,
+                    profilePicture :true
                 }
             }
         }, 
@@ -37,13 +45,12 @@ export async function GET(
     })
 
     } catch(error){
-        if(error instanceof Error){
+        console.error(error)
             return Response.json({
                 message  : "internal server error"
             },{
                 status : 500
             })
-        }
     }
 }
 
@@ -56,7 +63,7 @@ export async function DELETE(
     try{
     const {postId} = await params
     
-    const user = getCurrentUser()
+    const user = await  getCurrentUser()
 
     const post = await prisma.post.findUnique({
         where : {
@@ -148,7 +155,8 @@ export async function PATCH(
         where : {
             id: postId
         },data : {
-            content : parseBody.data.content
+            content : parseBody.data.content,
+            tags : parseBody.data.tags
         }
     })
 
