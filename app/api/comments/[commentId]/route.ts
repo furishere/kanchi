@@ -8,13 +8,17 @@ export async function PATCH(
         params : Promise<{commentId : string}>
     }
 ){
-    const {commentId} = await params
+    try{
+         const {commentId} = await params
 
     const user = await getCurrentUser()
 
     const comment = await prisma.comment.findUnique({
         where : {
             id :commentId
+        }, select :{
+            id: true,
+            userId : true
         }
     })
 
@@ -41,7 +45,7 @@ export async function PATCH(
         return Response.json({
             message : "Inavild Input"
         }, {
-            status : 401
+            status : 400
         })
     }
 
@@ -59,8 +63,17 @@ export async function PATCH(
         message : "Comment updated",
         newComment
     },{
-        status : 201
+        status : 200
     })
+    } catch(error){
+        console.error(error)
+
+        return Response.json({
+            message : "internal server error"
+        },{
+            status : 500
+        })
+    }
 }
 
 export async function DELETE(req: Request,
@@ -68,8 +81,8 @@ export async function DELETE(req: Request,
         params : Promise<{commentId : string}>
     }
 ){
-
-    const {commentId} = await params
+    try{
+         const {commentId} = await params
 
     const user = await getCurrentUser()
 
@@ -95,7 +108,7 @@ export async function DELETE(req: Request,
         })
     }
 
-    const deleteComment = await prisma.comment.delete({
+    await prisma.comment.delete({
         where : {
             id:commentId
         } 
@@ -106,4 +119,13 @@ export async function DELETE(req: Request,
     },{
         status : 200
     })
+    } catch(error){
+        console.error(error)
+
+        return Response.json({
+            message : "internal server error"
+        },{
+            status : 500
+        })
+    }
 }

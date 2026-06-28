@@ -14,22 +14,30 @@ export async function GET(
     const post = await prisma.post.findUnique({
         where : {
             id : postId
-        },include : {
-            comments : {
+        },include :{
+            user : {
                 select :{
                     id : true,
-                    content : true,
-                    createdAt : true
+                    username : true,
+                    profilePicture : true
                 }
             },
-            user : {
-                select : {
-                    id: true,
-                    username : true,
-                    profilePicture :true
+            comments :{
+                include :{
+                    user : {
+                        select : {
+                            username : true,
+                        }
+                    }
                 }
-            }
-        }, 
+            },
+            _count : {
+                select : {
+                    likes : true,
+                    comments : true
+                }
+            },
+        }
     })
 
     if(!post){

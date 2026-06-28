@@ -8,6 +8,7 @@ export async function POST(
         params: Promise<{postId : string}>
     }
 ){
+    try{
     const body = await req.json()
 
     const {postId} = await params
@@ -49,10 +50,20 @@ export async function POST(
     })
 
     return Response.json({
-        message : "comment successfully created"
+        message : "comment successfully created",
+        comment
     },{
         status : 201
     })
+    } catch(error){
+        console.error(error)
+
+        return Response.json({
+            message : "internal server error"
+        },{
+            status : 500
+        })
+    }
 
 }
 

@@ -59,16 +59,25 @@ export async function GET(req : Request){
             orderBy : {
                 createdAt : "desc"
             },
-            select : {
-                id : true,
-                content : true,
-                tags : true,
-                createdAt : true,
-                comments : {
+            include :{
+                user : {
                     select : {
                         id : true,
-                        content : true,
-                        createdAt : true
+                        username : true,
+                        profilePicture : true
+                    }
+                },
+                _count : {
+                    select :{
+                        likes : true,
+                        comments : true
+                    }
+                },
+                likes : {
+                    where :{
+                        userId : user.id
+                    }, select : {
+                        id : true
                     }
                 }
             }
