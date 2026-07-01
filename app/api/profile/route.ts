@@ -1,3 +1,4 @@
+import { Prisma } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { updateProfile } from "@/validations/profile";
@@ -13,7 +14,7 @@ export async function PATCH(
     const parsedBody = updateProfile.safeParse(body)
     if(!parsedBody.success){
         return Response.json({
-            message : "invalid input",
+            message : "Invalid input",
             error : parsedBody.error.issues
         },{
             status : 400
@@ -22,18 +23,20 @@ export async function PATCH(
 
     const {username, bio, birthDate, displayName } = parsedBody.data
 
-    const existingUser = await prisma.user.findUnique({
+    if(username !== undefined){
+        const existingUser = await prisma.user.findUnique({
         where : {
             username
         }
     })
 
-    if(existingUser && existingUser.id !== user.id){
+     if(existingUser && existingUser.id !== user.id){
         return Response.json({
-            message : "username already taken"
+            message : "Username already taken"
         },{
             status : 409
         })
+    }
     }
 
     const updatedProfile = await prisma.user.update({
@@ -41,24 +44,27 @@ export async function PATCH(
             id: user.id
         },
         data : {
-            username,
-            bio,
-            birthDate,
-            displayName
+            ...(username !== undefined && {username}),
+            ...(displayName !== undefined && {displayName}),
+            ...(bio !== undefined && {bio}),
+            ...(birthDate !== undefined && {birthDate})
+        }, select : {
+                id: true,
+                username: true,
+                displayName: true,
+                email: true,
+                emailVerified: true,
+                bio: true,
+                birthDate: true,
+                profilePicture: true,
+                profileBanner: true,
+                updatedAt: true,
         }
     })
 
     return Response.json({
-        message : "your profile updated sucessfully",
-        profile :{
-            id : updatedProfile.id,
-            username : updatedProfile.username,
-            displayName : updatedProfile.displayName,
-            bio : updatedProfile.bio,
-            birthDate : updatedProfile.birthDate,
-            profilePicture : updatedProfile.profilePicture,
-            profileBanner : updatedProfile.profileBanner
-        }
+        message : "Profile updated successfully",
+        profile : updatedProfile
     },{
         status : 200
     })
@@ -67,10 +73,19 @@ export async function PATCH(
     } catch(error){
         console.error(error)
 
-        return Response.json({
-            message : "internal server error"
-        },{
-            status : 500
-        })
+           if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+    ) {
+        return Response.json(
+            { message: "Username already taken" },
+            { status: 409 }
+        );
+    }
+
+    return Response.json(
+        { message: "Internal server error" },
+        { status: 500 }
+    );
     }
 }
