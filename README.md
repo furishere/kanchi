@@ -455,3 +455,23 @@ Moderation Queue
 ⬜ AI Writing Companion
 
 ```
+
+``` bash
+Edit/Delete comments (if not already complete)
+Trending tags
+Mention support (@username)
+Hashtag search (#lonely, #college)
+Report post
+Admin moderation
+Rate limiting (prevent spam)
+Pagination
+Deployment
+```
+
+```bash
+Logout
+Verify Email
+Forgot Password
+Reset Password
+Change Password
+```

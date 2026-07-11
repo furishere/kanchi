@@ -89,3 +89,27 @@ export async function PATCH(
     );
     }
 }
+
+export async function DELETE(){
+    const user =  await getCurrentUser()
+
+    if(!user){
+        return Response.json({
+            message : "user not found"
+        },{
+            status : 404
+        })
+    }
+
+    await prisma.user.findUnique({
+        where : {
+            id :user.id
+        }
+    })
+
+    return Response.json({
+        message : "account deleted successfully"
+    },{
+        status : 200
+    })
+}

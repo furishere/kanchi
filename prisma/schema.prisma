@@ -7,12 +7,6 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Status {
-  PENDING 
-  ACCEPTED 
-  REJECTED
-}
-
 model User {
   id              String @id @default(cuid())
   username        String @unique
@@ -22,8 +16,6 @@ model User {
 
   emailVerified   Boolean @default(false)
 
-  profilePicture  String?
-  profileBanner   String?
   bio             String?
   birthDate       DateTime?
 
@@ -33,12 +25,6 @@ model User {
   posts           Post[]
   comments        Comment[]
   likes           Like[]
-
-  friendshipsAsUser1 FriendShip[] @relation("FriendshipUser1")
-  friendshipsAsUser2 FriendShip[] @relation("FriendshipUser2")
-
-  sentRequests     FriendRequest[] @relation("SentRequests")
-  receivedRequests FriendRequest[] @relation("ReceivedRequests")
 }
 
 model Post {
@@ -92,32 +78,3 @@ model Like {
 
 }
 
-model FriendShip {
-  user1Id    String
-  user2Id    String
-
-  user1      User @relation("FriendshipUser1", fields: [user1Id], references: [id], onDelete: Cascade)
-  user2      User @relation("FriendshipUser2", fields: [user2Id], references: [id], onDelete: Cascade)
-
-  createdAt  DateTime @default(now())
-
-  @@id([user1Id, user2Id])
-}
-
-model FriendRequest {
-  id          String @id @default(cuid())
-
-  senderId    String
-  receiverId  String
-
-  sender       User @relation("SentRequests", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver     User @relation("ReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
-
-  createdAt    DateTime @default(now())
-
-  @@unique([senderId, receiverId])
-  @@index([senderId])
-  @@index([receiverId])
-
-  status Status @default(PENDING)
-}
