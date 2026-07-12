@@ -10,6 +10,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-newsreader);
   --font-mono: var(--font-manrope);
+  --font-ibm: var(--font-ibmplexmono)
 }
 
 @media (prefers-color-scheme: dark) {
