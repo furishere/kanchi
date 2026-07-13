@@ -1,16 +1,15 @@
 import { Box } from "@/components/Box";
 import { HrLine } from "@/components/HrLine";
+import { NavBar } from "@/components/navBar";
 import { Paragraph } from "@/components/paragraph";
 import { Post } from "@/components/Post";
 
 export default function Profile(){
-    return <div className="flex justify-center">
-        <div className="w-full max-w-xl">
-            <div>
+    return  <div>
                 <div className="mt-4 tracking-widest text-[#B8B8B8] font-sans">
                     @furishere
                 </div>
-                <div className="font-sans italic text-xl tracking-wide">
+                <div className="font-sans italic text-lg tracking-wide">
                     Anonymous mostly, but u can read me 
                 </div>
                 <div className="mt-4 flex gap-4">
@@ -30,6 +29,4 @@ export default function Profile(){
                     <Post />
                 </div>
             </div>
-        </div>
-    </div>
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Inter, Manrope, Newsreader } from "next/font/google";
 import "./globals.css";
+import { NavBar } from "@/components/navBar";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -34,7 +35,14 @@ export default function RootLayout({
       lang="en"
       className={`${manrope.variable} ${ibmplexmono.variable} ${newsreader.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+      <div className="flex justify-center">
+      <div className="w-full max-w-xl">
+      <NavBar />
+      {children}
+      </div>
+      </div>
+      </body>
     </html>
   );
 }
