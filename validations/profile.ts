@@ -3,19 +3,14 @@ import {z} from "zod"
 export const updateProfile = z.object({
     username : z
         .string()
-        .min(3)
-        .max(30)
-        .optional(),
-    displayName : z
-        .string()
-        .max(50)
+        .trim()
+        .min(3, "username must be at least 3 characters")
+        .max(30, "username cannot exceed 30 characters")
         .optional(),
     bio : z
         .string()
-        .max(160)
-        .optional(),
-    birthDate : z
-        .coerce.date()
+        .trim()
+        .max(160, "bio cannot exceed 160 characters")
         .optional()
     
 })

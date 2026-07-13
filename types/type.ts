@@ -1,0 +1,3 @@
+interface Text {
+    text : string 
+}

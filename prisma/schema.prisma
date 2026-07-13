@@ -7,17 +7,29 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Emotion {
+  Lonely
+  Heartbroken
+  Hopeful
+  Grateful
+  Anxious
+  Confused
+  Regretful
+  Angry
+  BurnedOut
+  Loved
+  Guilty
+}
+
 model User {
   id              String @id @default(cuid())
   username        String @unique
   email           String @unique
   password        String?
-  displayName     String?
 
   emailVerified   Boolean @default(false)
 
   bio             String?
-  birthDate       DateTime?
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -31,7 +43,8 @@ model Post {
   id         String   @id @default(cuid())
   content    String
   
-  tags       String[] @default([])
+  emotion    Emotion
+  hasTriggerWarning Boolean @default(false)
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt

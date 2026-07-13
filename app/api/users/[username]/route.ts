@@ -14,12 +14,8 @@ export async function GET(
         }, select :{
             id : true,
             username : true,
-            displayName : true,
             bio : true,
-            profilePicture : true,
-            profileBanner : true,
             createdAt : true,
-            updatedAt : true,
             _count : {
                 select : {
                     posts : true
@@ -33,7 +29,8 @@ export async function GET(
                 select : {
                     id : true,
                     content : true,
-                    tags : true,
+                    emotion : true,
+                    hasTriggerWarning : true,
                     createdAt : true,
                     _count : {
                         select : {

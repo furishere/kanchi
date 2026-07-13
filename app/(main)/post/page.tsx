@@ -10,7 +10,6 @@ export default function Compose(){
             <Paragraphsomany text="WHAT'S ON YOUR MIND"/>
             <label>
             <textarea rows={11} cols={71}  placeholder="write it exacty as it feels. No one will know it's you"
-            class="mt-2"
             className='border m-2 font-sans text-center border-[#262626] placeholder:m-2'>
                 
             </textarea>
