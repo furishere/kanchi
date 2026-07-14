@@ -3,6 +3,45 @@ import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { updateProfile } from "@/validations/profile";
 
+export async function GET(
+    req: Request
+){
+    const user = await getCurrentUser()
+
+    const profile = await prisma.user.findUnique({
+        where : {
+            id : user.id
+        }, select :{
+            id : true,
+            username : true,
+            bio : true,
+            email : true,
+            createdAt : true,
+            _count : {
+                select :{
+                    posts :true,
+                    comments :true,
+                    likes : true
+                }
+            }
+        }
+    })
+
+    if(!profile){
+        return Response.json({
+            message : "user not found",
+        },{
+            status : 404
+        })
+    }
+
+    return Response.json({
+        profile
+    },{
+        status : 200
+    })
+}
+
 export async function PATCH(
     req: Request
 ){
@@ -21,7 +60,7 @@ export async function PATCH(
         })
     }
 
-    const {username, bio, birthDate, displayName } = parsedBody.data
+    const {username, bio} = parsedBody.data
 
     if(username !== undefined){
         const existingUser = await prisma.user.findUnique({
@@ -45,19 +84,13 @@ export async function PATCH(
         },
         data : {
             ...(username !== undefined && {username}),
-            ...(displayName !== undefined && {displayName}),
             ...(bio !== undefined && {bio}),
-            ...(birthDate !== undefined && {birthDate})
         }, select : {
                 id: true,
                 username: true,
-                displayName: true,
                 email: true,
                 emailVerified: true,
                 bio: true,
-                birthDate: true,
-                profilePicture: true,
-                profileBanner: true,
                 updatedAt: true,
         }
     })

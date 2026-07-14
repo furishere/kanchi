@@ -19,7 +19,6 @@ export async function GET(
                 select :{
                     id : true,
                     username : true,
-                    profilePicture : true
                 }
             },
             comments :{
@@ -164,7 +163,8 @@ export async function PATCH(
             id: postId
         },data : {
             content : parseBody.data.content,
-            tags : parseBody.data.tags
+            tags : parseBody.data.emotion,
+            hasTriggerWarning : parseBody.data.hasTriggerWarning
         }
     })
 

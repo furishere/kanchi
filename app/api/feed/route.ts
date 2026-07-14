@@ -1,10 +1,14 @@
+import { Emotion } from "@/generated/prisma/enums";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(){
+export async function GET(req:Request){
     try{
         
     const currentUser = await  getCurrentUser()
+
+    const {searchParams} = new URL(req.url)
+    const emotion = searchParams.get("emotion")
 
     const posts = await prisma.post.findMany({
        orderBy : {
@@ -14,9 +18,6 @@ export async function GET(){
         user : {
             select :{
                 id : true,
-                username : true,
-                profilePicture : true,
-                displayName : true
             },
         }, _count : {
             select : {

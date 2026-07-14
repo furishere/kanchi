@@ -1,27 +1,61 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  --surface: #f5f5f5;
+  --border: #d4d4d4;
+
+  --gray-1: #f1f1f1;
+  --gray-2: #e2e2e2;
+  --gray-3: #c4c4c4;
+  --gray-4: #7a7a7a;
+  --gray-5: #2e2e2e;
+
+  --accent: #000000;
+}
+
+.dark {
+  --background: #000000;
+  --foreground: #ffffff;
+
+  --surface: #141414;
+  --border: #232323;
+
+  --gray-1: #141414;
+  --gray-2: #232323;
+  --gray-3: #4a4a4a;
+  --gray-4: #7a7a7a;
+  --gray-5: #b8b8b8;
+
+  --accent: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+
+  --color-gray-1: var(--gray-1);
+  --color-gray-2: var(--gray-2);
+  --color-gray-3: var(--gray-3);
+  --color-gray-4: var(--gray-4);
+  --color-gray-5: var(--gray-5);
+
+  --color-accent: var(--accent);
+
   --font-sans: var(--font-newsreader);
   --font-mono: var(--font-manrope);
-  --font-ibm: var(--font-ibmplexmono)
+  --font-ibm: var(--font-ibm-plex-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
 }

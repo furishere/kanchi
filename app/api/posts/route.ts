@@ -19,12 +19,13 @@ export async function POST(req: Request){
 
     const user = await getCurrentUser()
 
-    const {content, tags} = parseBody.data
+    const {content, emotion, hasTriggerWarning} = parseBody.data
     
     const post = await prisma.post.create({
         data : {
             content,
-            tags : tags ?? [],
+            emotion,
+            hasTriggerWarning,
             userId : user.id
         }
     })
@@ -64,7 +65,6 @@ export async function GET(req : Request){
                     select : {
                         id : true,
                         username : true,
-                        profilePicture : true
                     }
                 },
                 _count : {
