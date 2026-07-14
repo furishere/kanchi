@@ -15,6 +15,8 @@
   --gray-5: #2e2e2e;
 
   --accent: #000000;
+  --button-bg: #000000;
+  --button-text : #ffffff
 }
 
 .dark {
@@ -31,6 +33,9 @@
   --gray-5: #b8b8b8;
 
   --accent: #ffffff;
+
+   --button-bg: #ffffff;
+  --button-text : #000000
 }
 
 @theme inline {
@@ -47,6 +52,9 @@
   --color-gray-5: var(--gray-5);
 
   --color-accent: var(--accent);
+
+  --color-button:var(--button-bg);
+  --color-button-text:var(--button-text);
 
   --font-sans: var(--font-newsreader);
   --font-mono: var(--font-manrope);

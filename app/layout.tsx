@@ -39,7 +39,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
       <Themeprovider>
-      <div className="flex justify-center bg-white text-black dark:bg-black dark:text-white">
+      <div className="flex justify-center bg-background text-foreground">
       <div className="w-full max-w-xl">
       <NavBar />
       {children}  
