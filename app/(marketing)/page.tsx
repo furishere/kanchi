@@ -36,7 +36,8 @@ export default function Home() {
 
     </div>
     <div className="mt-22 mb-22">
-    <Post hasTriggerWarning="Hopeful"
+    <Post hasTriggerWarning={true}
+    moodName="hopeful"
     anonymousOrId="Anonymous"
     time="2h ago"
     content="Handed in my resignation today after three years of hating Mondays. Terrified — but for once I'm choosing something instead of just enduring it."
@@ -130,7 +131,7 @@ export default function Home() {
     <HrLine />
     <div className="flex justify-between mt-4 w-full">
     <div className="text-left m-2">
-    <div className="font-sans font-bold italic  text-[20px]">Kanchi .</div>
+    <div className="font-sans font-bold italic  text-[20px]">kanchi .</div>
     <div className="text-gray-4 font-ibm text-[11px] w-full max-w-3xs md:max-w-xs">
       Say it. Stay unnamed. A place to put down what you can't say out loud.
     </div>

@@ -3,7 +3,8 @@ import { HrLine } from './HrLine'
 import { Heart, MessageCircle } from 'lucide-react'
 
 interface POST {
-  hasTriggerWarning : string
+  moodName : string
+  hasTriggerWarning : boolean
   anonymousOrId : string
   time : string
   content : string
@@ -17,20 +18,28 @@ export const Post = ({
   time,
   content,
   commentNumber,
-  likeNumber
+  likeNumber,
+  moodName
 }: POST) => {
-  return <div className='flex justify-center'>
-     <div className='p-4 w-full max-w-xs md:max-w-md border border-border'>
+  return <div className='flex justify-center mt-4'>
+     <div className='p-4 w-full max-w-xl md:max-w-xl border border-border'>
       <span className='border px-2 py-1 fonst-ibm text-[9.5px] text-foreground bg-background uppercase'>
-        {hasTriggerWarning}
+        {moodName}
       </span>
       <div className= 'font-ibm text-gray-4 text-[9.5px] flex gap-4 mt-3 mb-4 uppercase'>
         <span>{anonymousOrId} </span>
         <span> {time}</span>
       </div>
-      <div className='font-ibm text-[13.5px]'>
+      {hasTriggerWarning && (
+        <div className='font-ibm text-[13.5px]'>
         {content}
       </div>
+      )}
+      {!hasTriggerWarning && (
+        <div className=' border border-dashed border-foreground text-center py-2 text-[11.5px] font-public bg-[#141414]'>
+          Trigger warning: self harm - tap to reveal
+        </div>
+      )}
       <div className='bg-gray-4 mt-4 mb-2 h-px w-full max-w-xl' />
       <div className='flex mt-4 gap-3 align-center'>
         <div className='flex justify-center items-center'>

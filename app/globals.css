@@ -57,7 +57,7 @@
   --color-button-text:var(--button-text);
 
   --font-sans: var(--font-newsreader);
-  --font-mono: var(--font-manrope);
+  --font-public: var(--font-public-sans);
   --font-ibm: var(--font-ibm-plex-mono);
 }
 

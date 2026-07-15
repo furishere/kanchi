@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Inter, Manrope, Newsreader, Public_Sans } from "next/font/google";
-import "./globals.css";
 import { Themeprovider } from "@/components/theme-provider";
+import { Navabar } from "@/components/navBar";
 
 
 const publicSans = Public_Sans({
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   description: "A serious social platform where users can anonymously share emotions, confessions, thoughts, and experiences in real time.",
 };
 
-export default function RootLayout({
+export default function MainLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -41,6 +41,7 @@ export default function RootLayout({
       <Themeprovider>
       <div className="flex justify-center bg-background text-foreground">
       <div>
+      <Navabar />
       {children}  
       </div>
       </div>

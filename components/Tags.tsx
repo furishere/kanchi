@@ -5,7 +5,7 @@ interface Text {
 }
 
 export const Tags = ({text} : Text) => {
-  return <button className='border border-[#262626] text-[#B8B8B8] hover:border-white hover:text-white px-3 py-1 fonst-sans text-xs cursor-pointer tracking-wider m-1'>
+  return <button className='border border-border px-3 py-1 cursor-pointer tracking-widest m-1 font-ibm uppercase text-gray-4 text-[10.5px] hover:border-foreground hover:text-foreground'>
     {text}
     </button>
 }

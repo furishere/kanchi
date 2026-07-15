@@ -1,6 +1,6 @@
 "use client"
 
-import { Heading } from "@/components/heading"
+
 import { InputAuth } from "@/components/InputAuth"
 import { useState } from "react"
 
@@ -13,7 +13,7 @@ export default function Register(){
     return <div className="flex justify-center bg-black">
         <div className="w-full max-w-xl h-screen">
             <div className="flex justify-center mt-24 flex-col">
-                <Heading text="Register"/>
+                
                 <div className="font-sans text-center tracking-wider text-[#B8B8B8] text-sm">your name stays with you. nothing else dose.</div>
                 <div className='mt-6 flex justify-center flex-col items-center'>
                 <InputAuth 

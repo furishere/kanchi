@@ -9,7 +9,7 @@ export const LandingPageNavabar = () => {
 
   return <div className='flex flex-col sticky top-0 bg-background'>
     <div className='flex items-center justify-around mt-4 mb-4'>
-    <div className='text-[24px] font-sans italic'>Kanchi .</div>
+    <div className='text-[24px] font-sans italic'>kanchi .</div>
     <div className='text-[11px] text-gray-4 font-ibm hidden md:flex gap-4'>
         <span>FEATURES</span>
         <span>HOW IT WORKS</span>
