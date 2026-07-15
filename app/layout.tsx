@@ -3,6 +3,7 @@ import { IBM_Plex_Mono, Inter, Manrope, Newsreader } from "next/font/google";
 import "./globals.css";
 import { NavBar } from "@/components/navBar";
 import { Themeprovider } from "@/components/theme-provider";
+import { LandingPageNavabar } from "@/components/LandingPageNavabar";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -40,8 +41,8 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
       <Themeprovider>
       <div className="flex justify-center bg-background text-foreground">
-      <div className="w-full max-w-xl">
-      <NavBar />
+      <div>
+      <LandingPageNavabar />
       {children}  
       </div>
       </div>

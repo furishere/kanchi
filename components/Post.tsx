@@ -20,7 +20,7 @@ export const Post = ({
   likeNumber
 }: POST) => {
   return <div className='flex justify-center'>
-     <div className='p-4 w-full max-w-md border border-border'>
+     <div className='p-4 w-full max-w-xs md:max-w-md border border-border'>
       <span className='border px-2 py-1 fonst-ibm text-[9.5px] text-foreground bg-background uppercase'>
         {hasTriggerWarning}
       </span>
@@ -31,7 +31,7 @@ export const Post = ({
       <div className='font-ibm text-[13.5px]'>
         {content}
       </div>
-      <HrLine />
+      <div className='bg-gray-4 mt-4 mb-2 h-px w-full max-w-xl' />
       <div className='flex mt-4 gap-3 align-center'>
         <div className='flex justify-center items-center'>
         <Heart className='h-[10.5px] text-gray-4'/>
