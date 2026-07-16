@@ -1,3 +1,4 @@
+import { Prisma } from "@/generated/prisma/client"
 import { getCurrentUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
@@ -11,10 +12,19 @@ export async function POST(
         const {postId} = await params
 
         const user = await getCurrentUser()
+        if(!user){
+            return Response.json({
+                message : "unauthorized"
+            },{
+                status : 401
+            })
+        }
 
         const post = await prisma.post.findUnique({
             where:{
                 id: postId
+            }, select :{
+                id : true
             }
         })
 
@@ -26,24 +36,29 @@ export async function POST(
             })
         }
 
-        const like = await prisma.like.findUnique({
+        const existingLike = await prisma.like.findUnique({
             where : {
                 userId_postId :{
                     userId : user.id,
                     postId
                 }
+            }, select : {
+                id :true
             }
         })
 
-        if(like){
+        if(existingLike){
             await prisma.like.delete({
                 where : {
-                    id : like.id
+                    userId_postId :{
+                    userId : user.id,
+                    postId
                 }
+            }
             })
 
              return Response.json({
-                liked : false,
+                liked : true,
                 messge : "post unliked"
             },{
                 status : 200
@@ -66,6 +81,21 @@ export async function POST(
 
     } catch(error){
         console.error(error)
+
+        if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return Response.json(
+        {
+          liked: true,
+          message: "Post already liked",
+        },
+        {
+          status: 200,
+        }
+      );
+    }
 
         return Response.json({
             message : "internal server error"

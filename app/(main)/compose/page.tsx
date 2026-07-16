@@ -3,7 +3,7 @@ import { Tags } from "@/components/Tags";
 import { Square } from "lucide-react";
 
 export default function Profile(){
-    return <div className="w-full flex flex-col justify-center max-w-xl">
+    return <div className="w-full flex flex-col justify-center max-w-xs md:max-w-xl">
         <div className="mt-12">
             <div className="uppercase text-gray-4 font-ibm text-[10.5px] tracking-widest">
                What's on your mind 
@@ -11,6 +11,7 @@ export default function Profile(){
             <div className="m-2">
             <textarea 
             className="border border-border font-ibm tracking-wider placeholder:text-gray-4
+            w-full max-w-xs md:max-w-xl
             placeholer:traking-wider  p-3 text-sm" 
             rows={7} 
             cols={60}
@@ -19,7 +20,7 @@ export default function Profile(){
             <div className="uppercase text-gray-4 font-ibm text-[10.5px] tracking-widest mt-4">
                Emotion — pick exactly one
             </div>
-            <div className="mt-3 mb-4">
+            <div className="mt-3 mb-4 w-full max-w-xs md:max-w-xl ">
                 <Tags text="lonely"/>
                 <Tags text="heartbroken"/>
                 <Tags text="hopeful"/>

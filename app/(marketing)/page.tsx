@@ -6,7 +6,23 @@ import { HrLine } from "@/components/HrLine";
 
 
 export default function Home() {
-  return <div className="flex justify-center items-center flex-col mt-12">
+  const navbar = [
+        {
+            id :1,
+            href : "#features",
+            title : "features"
+        },{
+            id : 2,
+            href : "#howitworks",
+            title : "how it works"
+        },{
+            id : 3,
+            href : "#community",
+            title : "community"
+        }
+    ]
+
+  return <div id="community" className="flex justify-center items-center flex-col mt-12">
     <div className="flex justify-center">
     <div className="font-ibm text-xs md:text-[10.5px] border border-dashed text-center text-gray-4 py-1 px-3 tracking-widest">
       NO ACCOUNT REQUIRED TO READ
@@ -45,7 +61,7 @@ export default function Home() {
     likeNumber={222}/>
     </div>
 
-    <div className="flex justify-center items-center flex-col">
+    <div id="features" className="flex justify-center items-center flex-col">
       <div className="font-ibm text-[10.5px] uppercase text-gray-4">
         WHY KANCHI
       </div >
@@ -83,7 +99,7 @@ export default function Home() {
          information="The feed is chronological and filterable. No engagement bait, no ranking your feelings by virality."/>
       </div>
       
-      <div className="font-ibm text-[10.5px] uppercase text-gray-4 mt-22">
+      <div id="howitworks" className="font-ibm text-[10.5px] uppercase text-gray-4 mt-22">
         HOW IT WORKS
       </div >
       <div className="text-foreground md:text-[32px] font-sans italic font-bold text-[24px]">
@@ -105,7 +121,7 @@ export default function Home() {
       information="Post it. Read the replies if you want, or just close the tab — either way, it's out."/>
       </div>
     </div>
-    <div className="w-full max-w-xs  md:max-w-xl border text-center mt-22 py-4 ">
+    <div className="w-full max-w-xs  md:max-w-xl border text-center mt-22 py-4 mb-12">
       <div className="mt-4 font-sans italic font-bold md:text-[32px] text-[24px] ">
       You don't have to carry it alone
       </div>
@@ -129,7 +145,7 @@ export default function Home() {
       </div>
     </div>
     <HrLine />
-    <div className="flex justify-between mt-4 w-full">
+    <div className="flex justify-between mt-4 w-full mb-4 items-center">
     <div className="text-left m-2">
     <div className="font-sans font-bold italic  text-[20px]">kanchi .</div>
     <div className="text-gray-4 font-ibm text-[11px] w-full max-w-3xs md:max-w-xs">
@@ -138,9 +154,11 @@ export default function Home() {
     </div>
     <div className="flex flex-col text-[10px] font-ibm mr-2">
     <span className="uppercase text-gray-4 font-ibm">Product</span>
-    <span>How it works</span>
-    <span>Contact</span>
-    <span >Features</span>
+    {navbar.map(nav => (
+      <Link href={nav.href} key={nav.id}>
+      {nav.title}
+      </Link>
+    ))}
     </div>
     </div>  
     <HrLine />

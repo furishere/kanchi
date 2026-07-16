@@ -14,28 +14,28 @@ export async function GET(
     const post = await prisma.post.findUnique({
         where : {
             id : postId
-        },include :{
-            user : {
-                select :{
-                    id : true,
-                    username : true,
+        },select :{
+            id : true,
+            content : true,
+            emotion : true,
+            hasTriggerWarning : true,
+            createdAt : true,
+            updatedAt : true,
+            comments : {
+                orderBy : {
+                    createdAt : "desc"
+                }, select :{
+                    id : true, 
+                    content : true,
+                    createdAt : true
                 }
             },
-            comments :{
-                include :{
-                    user : {
-                        select : {
-                            username : true,
-                        }
-                    }
-                }
-            },
-            _count : {
+            _count :{
                 select : {
                     likes : true,
                     comments : true
                 }
-            },
+            }
         }
     })
 
@@ -71,10 +71,19 @@ export async function DELETE(
     const {postId} = await params
     
     const user = await  getCurrentUser()
+    if(!user){
+        return Response.json({
+            message : "unauthorized"
+        },{
+            status : 401
+        })
+    }
 
     const post = await prisma.post.findUnique({
         where : {
             id : postId
+        }, select :{
+            userId : true
         }
     })
 
@@ -88,7 +97,7 @@ export async function DELETE(
 
     if(post.userId !== user.id){
         return Response.json({
-            message : "unauthorized"
+            message : "Forbidden"
         },{
             status : 403
         })
@@ -106,79 +115,12 @@ export async function DELETE(
         status : 200
     })
     } catch(error){
-        if(error instanceof Error){
-            return Response.json({
-                message : "internal server error"
-            },{
-                status : 500
-            })
-        }
+        console.error(error)
+        return Response.json({
+            message : "internal server error"
+        },{
+            status : 500
+        })
     }
 }
 
-export async function PATCH(
-    req: Request,
-    {params} : {
-        params : Promise<{postId : string}>
-    }
-){
-    try{
-    const {postId} = await params
-
-    const user = await getCurrentUser()
-
-    const post = await prisma.post.findUnique({
-        where : {
-            id: postId
-        }
-    })
-    if(!post){
-        return Response.json({
-            message : "post not found"
-        },{
-            status : 404
-        })
-    }
-    if(post.userId !== user.id){
-        return Response.json({
-            message : "unauthorized"
-        },{
-            status : 403
-        })
-    }
-
-    const body = await req.json()
-    
-    const parseBody = postSchema.safeParse(body)
-    if(!parseBody.success){
-        return Response.json({
-            message : "Invalid inputs"
-        },{
-            status : 400
-        })
-    }
-
-    const updatePost = await prisma.post.update({
-        where : {
-            id: postId
-        },data : {
-            content : parseBody.data.content,
-            tags : parseBody.data.emotion,
-            hasTriggerWarning : parseBody.data.hasTriggerWarning
-        }
-    })
-
-    return Response.json({
-        updatePost
-    })
-
-    }catch(error){
-        if(error instanceof Error){
-            return Response.json({
-                message : "internal server error"
-            },{
-                status : 500
-            })
-        }
-    }
-}

@@ -1,6 +1,5 @@
 "use client"
 
-
 import { InputAuth } from "@/components/InputAuth"
 import { useState } from "react"
 

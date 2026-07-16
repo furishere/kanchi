@@ -7,13 +7,22 @@ export async function DELETE(req: Request,
     }
 ){
     try{
-         const {commentId} = await params
+    const {commentId} = await params
 
     const user = await getCurrentUser()
+    if(!user){
+        return Response.json({
+            message : "unauthorized"
+        },{
+            status : 401
+        })
+    }
 
     const comment = await prisma.comment.findUnique({
         where : {
             id: commentId
+        }, select :{
+            userId : true
         }
     })
 
@@ -27,7 +36,7 @@ export async function DELETE(req: Request,
 
     if(comment.userId !== user.id){
         return Response.json({
-            message : "unauthorized"
+            message : "Forbidden"
         },{
             status : 403
         })

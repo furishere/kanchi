@@ -7,6 +7,13 @@ export async function GET(
     req: Request
 ){
     const user = await getCurrentUser()
+    if(!user){
+        return Response.json({
+            message : "unauthorized"
+        },{
+            status : 401
+        })
+    }
 
     const profile = await prisma.user.findUnique({
         where : {
@@ -15,13 +22,31 @@ export async function GET(
             id : true,
             username : true,
             bio : true,
-            email : true,
             createdAt : true,
             _count : {
                 select :{
                     posts :true,
-                    comments :true,
-                    likes : true
+                    comments: true,
+                    likes: true,
+                },
+            },
+            posts : {
+                orderBy : {
+                    createdAt : "desc"
+                },
+                take : 20,
+                select : {
+                    id : true,
+                    content : true,
+                    emotion : true,
+                    hasTriggerWarning : true,
+                    createdAt : true,
+                    _count : {
+                        select : {
+                            likes : true,
+                            comments : true
+                        }
+                    }
                 }
             }
         }
@@ -47,6 +72,13 @@ export async function PATCH(
 ){
     try{
     const user = await getCurrentUser()
+    if(!user){
+        return Response.json({
+            message : "unauthorizes"
+        },{
+            status : 401
+        })
+    }
 
     const body = await req.json()
 
@@ -66,6 +98,8 @@ export async function PATCH(
         const existingUser = await prisma.user.findUnique({
         where : {
             username
+        }, select :{
+            id :true
         }
     })
 
@@ -128,13 +162,13 @@ export async function DELETE(){
 
     if(!user){
         return Response.json({
-            message : "user not found"
+            message : "unauthorized"
         },{
-            status : 404
+            status : 401
         })
     }
 
-    await prisma.user.findUnique({
+    await prisma.user.delete({
         where : {
             id :user.id
         }

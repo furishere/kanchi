@@ -16,19 +16,29 @@ export async function POST(
     const parsedBody =  commentSchema.safeParse(body)
     if(!parsedBody.success){
         return Response.json({
-            message : "invalid inputs"
+            message : "invalid inputs",
+            errors : parsedBody.error.issues
         },{
             status : 400
         })
     }
 
     const user = await getCurrentUser()
+    if(!user){
+        return Response.json({
+            message : "unauthorized"
+        },{
+            status : 401
+        })
+    }
 
     const {content} = parsedBody.data 
 
     const post = await prisma.post.findUnique({
         where :{
             id : postId
+        }, select :{
+            id:true
         }
     })
 
@@ -46,6 +56,15 @@ export async function POST(
             content,
             userId : user.id,
             postId,
+        }, select :{
+            id : true, 
+            content : true,
+            createdAt : true,
+            user : {
+                select : {
+                    id: true
+                }
+            }
         }
     })
 

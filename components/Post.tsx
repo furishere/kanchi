@@ -22,7 +22,7 @@ export const Post = ({
   moodName
 }: POST) => {
   return <div className='flex justify-center mt-4'>
-     <div className='p-4 w-full max-w-xl md:max-w-xl border border-border'>
+     <div className='p-4 w-full max-w-xs md:max-w-xl border border-border'>
       <span className='border px-2 py-1 fonst-ibm text-[9.5px] text-foreground bg-background uppercase'>
         {moodName}
       </span>

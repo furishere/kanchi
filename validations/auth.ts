@@ -30,3 +30,12 @@ export const userSignIn = z.object({
 })
 
 export type userSignIn = z.infer<typeof userSignIn>
+
+export const changepassword = z.object({
+    password : z
+        .string()
+        .trim()
+        .min(8)
+})
+
+export type ChangePassword = z.infer<typeof changepassword>

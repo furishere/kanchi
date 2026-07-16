@@ -18,6 +18,13 @@ export async function POST(req: Request){
     }
 
     const user = await getCurrentUser()
+    if(!user){
+        return Response.json({
+            message : "unauthorized"
+        },{
+            status : 401
+        })
+    }
 
     const {content, emotion, hasTriggerWarning} = parseBody.data
     
@@ -27,6 +34,18 @@ export async function POST(req: Request){
             emotion,
             hasTriggerWarning,
             userId : user.id
+        }, select : {
+            id : true,
+            content : true,
+            emotion : true,
+            hasTriggerWarning : true,
+            createdAt : true,
+            user :{
+                select : {
+                    id : true,
+                    username : true
+                }
+            }
         }
     })
 
@@ -37,64 +56,12 @@ export async function POST(req: Request){
         status : 201
     })
     } catch(error){
-        if(error instanceof Error){
-            return Response.json
-            ({
-                message : "internal server error",
-                error : error.message
-            }, {
-                status : 500
-            })
-        }
-    }
-}
-
-export async function GET(req : Request){
-    try {
-        const user = await getCurrentUser()
-
-        const userPosts = await prisma.post.findMany({
-            where :{
-                userId : user.id
-            },
-            orderBy : {
-                createdAt : "desc"
-            },
-            include :{
-                user : {
-                    select : {
-                        id : true,
-                        username : true,
-                    }
-                },
-                _count : {
-                    select :{
-                        likes : true,
-                        comments : true
-                    }
-                },
-                likes : {
-                    where :{
-                        userId : user.id
-                    }, select : {
-                        id : true
-                    }
-                }
-            }
-        })
-
-        return Response.json({
-            userPosts,
-        },{
-            status : 200
-        })
-    }catch(error){
         console.error(error)
+
         return Response.json({
-            message : "Internal server error"
+            message : "internal server error"
         },{
             status : 500
         })
     }
-} 
-
+}
