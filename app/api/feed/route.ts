@@ -66,9 +66,20 @@ export async function GET(req: Request) {
       },
     });
 
+    const formattedPosts = posts.map((post) => ({
+      id: post.id,
+      content: post.content,
+      emotion: post.emotion,
+      hasTriggerWarning: post.hasTriggerWarning,
+      createdAt: post.createdAt,
+      likeCount: post._count.likes,
+      commentCount: post._count.comments,
+      likedByMe: post.likes.length > 0,
+    }));
+
     return Response.json(
       {
-        posts,
+        posts: formattedPosts,
       },
       {
         status: 200,

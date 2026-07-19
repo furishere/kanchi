@@ -2,6 +2,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { updateProfile } from "@/validations/profile";
+import { id } from "zod/locales";
 
 export async function GET(
     req: Request
@@ -60,11 +61,31 @@ export async function GET(
         })
     }
 
-    return Response.json({
-        profile
-    },{
-        status : 200
-    })
+    return Response.json(
+  {
+    profile: {
+      id: profile.id,
+      username: profile.username,
+      bio: profile.bio,
+      createdAt: profile.createdAt,
+
+      _count: profile._count,
+
+      posts: profile.posts.map((post) => ({
+        id: post.id,
+        content: post.content,
+        emotion: post.emotion,
+        hasTriggerWarning: post.hasTriggerWarning,
+        createdAt: post.createdAt,
+        likeCount: post._count.likes,
+        commentCount: post._count.comments,
+      })),
+    },
+  },
+  {
+    status: 200,
+  }
+);
 }
 
 export async function PATCH(
