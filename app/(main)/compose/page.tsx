@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { HrLine } from "@/components/HrLine";
-import { Tags } from "@/components/Tags";
+import { Tags } from "@/components/post/Tags";
 import { Square } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -125,7 +124,7 @@ export default function Compose() {
 
 
 
-        <HrLine />
+        <hr className="border-border"/>
 
 
         <div className="mt-2 flex justify-between">

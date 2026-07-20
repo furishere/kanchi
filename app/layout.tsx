@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Inter, Manrope, Newsreader, Public_Sans } from "next/font/google";
+import { IBM_Plex_Mono, Newsreader, Public_Sans } from "next/font/google";
 import "./globals.css";
-import { Themeprovider } from "@/components/theme-provider";
+import { Themeprovider } from "@/components/dark_mode/theme-provider";
 
 
 const publicSans = Public_Sans({
@@ -35,15 +35,13 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${publicSans.variable} ${ibmplexmono.variable} ${newsreader.variable} h-full antialiased`}
+      className={`${publicSans.variable} ${ibmplexmono.variable} ${newsreader.variable} antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-screen bg-background text-foreground">
       <Themeprovider>
-      <div className="flex justify-center bg-background text-foreground">
-      <div>
+      <main className="mx-auto w-full max-w-xl">
       {children}  
-      </div>
-      </div>
+      </main>
       </Themeprovider>
       </body>
     </html>

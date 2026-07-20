@@ -1,8 +1,8 @@
-import { LandingPageBox } from "@/components/LandingPageBox";
-import { LandingPageAnotherBox } from "@/components/LandingPageAnotherBox";
-import { Post } from "@/components/Post";
+import { LandingPageBox } from "@/components/landing/LandingPageBox";
+import { LandingPageAnotherBox } from "@/components/landing/LandingPageAnotherBox";
+import { Post } from "@/components/post/Post";
 import Link from "next/link"
-import { HrLine } from "@/components/HrLine";
+import { Buttons } from "@/components/pagesComponent/button";
 
 
 export default function Home() {
@@ -36,19 +36,8 @@ export default function Home() {
     Kanchi is a place to put down what you can't say out loud, no name attached, no judgment, just people who get it
     </div>
     </div>
-    <div className="flex justify-center mt-4">
-      <button className="
-      bg-button
-      text-button-text
-      border
-      border-border
-      text-[12px]
-      py-3 mt-4 px-5 font-ibm
-      hover:bg-button-text
-      hover:text-button
-      cursor-pointer">
-      START WRITING, IT'S FREE
-      </button>
+    <div className="flex justify-center text-[12px] mt-4">
+      <Buttons children={"START WRITING, IT'S FREE"}/>
 
     </div>
     <div className="mt-22 mb-22">
@@ -128,23 +117,12 @@ export default function Home() {
       <div className="mt-1 uppercase font-ibm text-gray-4 text-[12.5px]">
         FREE TO JOIN · FREE TO READ · ALWAYS ANONYMOUS
       </div>
-      <div className="mb-8">
-      <button className="
-      bg-button
-      text-button-text
-      border
-      border-border
-      text-[12px]
-      py-2 mt-4 px-5 font-ibm
-      hover:bg-button-text
-      hover:text-button
-      cursor-pointer
-      uppercase">
-      Create your accound
-      </button>
+      <div className="mb-8  text-[12px]">
+      <Buttons children="Create your accound"
+      />
       </div>
     </div>
-    <HrLine />
+    <div className="border border-border"/>
     <div className="flex justify-between mt-4 w-full mb-4 items-center">
     <div className="text-left m-2">
     <div className="font-sans font-bold italic  text-[20px]">kanchi .</div>
@@ -161,7 +139,7 @@ export default function Home() {
     ))}
     </div>
     </div>  
-    <HrLine />
+    <hr className="border-border"/>
     <div className="flex justify-between font-ibm text-gray-4 mt-4 w-full text-[10.5px] uppercase mb-12">
       <div>
         © 2026 KANCHI .

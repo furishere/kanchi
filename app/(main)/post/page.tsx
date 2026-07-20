@@ -1,7 +1,5 @@
-export default function CommentAndPost(){
+export default function PostAndComment(){
     return <div>
-        <div>
-            
-        </div>
+        Hi
     </div>
 }

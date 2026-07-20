@@ -43,7 +43,7 @@ export const Post = ({
         ) : (
           <button
             onClick={() => setRevealed(true)}
-            className="w-full border border-dashed border-foreground text-center py-2 text-[11.5px] font-ibm bg-[#141414] cursor-pointer hover:bg-[#1b1b1b] transition-colors"
+            className="w-full max-w-xl border border-dashed border-foreground text-center py-2 text-[11.5px] font-ibm bg-[#141414] cursor-pointer hover:bg-[#1b1b1b] transition-colors"
           >
             Trigger warning • Tap to reveal
           </button>

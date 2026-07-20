@@ -1,4 +1,4 @@
-import { LandingPageNavabar } from "@/components/LandingPageNavabar";
+import { LandingPageNavbar } from "@/components/landing/LandingPageNavbar";
 
 export default function LandingLayout({
   children,
@@ -6,11 +6,9 @@ export default function LandingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex justify-center bg-background text-foreground">
       <div>
-        <LandingPageNavabar />
+        <LandingPageNavbar />
         {children}
       </div>
-    </div>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Post } from "@/components/Post";
+import { Post } from "@/components/post/Post";
+import { Buttons } from "@/components/pagesComponent/button";
 
 interface ProfilePost {
   id: string;
@@ -95,13 +96,8 @@ export default function Profile() {
         </div>
 
         <div className="flex gap-2 tracking-widest text-[10.5px] mt-4 mb-4">
-          <button className="font-ibm border border-border py-2 px-3 uppercase">
-            Edit Account
-          </button>
-
-          <button className="font-ibm border border-border py-2 px-3 uppercase">
-            Delete Account
-          </button>
+          <Buttons children="Edit Account" variant="tertiary"/>
+          <Buttons children="Delete Account" variant="tertiary"/>
         </div>
       </div>
 

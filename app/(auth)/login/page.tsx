@@ -1,6 +1,6 @@
 "use client";
 
-import { InputAuth } from "@/components/InputAuth";
+import { InputAuth } from "@/components/auth/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 

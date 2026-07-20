@@ -1,5 +1,5 @@
-import { NavBar } from "@/components/navBar";
-import { Themeprovider } from "@/components/theme-provider";
+import { NavBar } from "@/components/post/navBar";
+import { Themeprovider } from "@/components/dark_mode/theme-provider";
 
 export default function MainLayout({
   children,
@@ -8,7 +8,7 @@ export default function MainLayout({
 }>) {
   return (
     <Themeprovider>
-      <div className="w-full min-h-screen flex flex-col items-center">
+      <div>
         <NavBar />
         {children}
       </div>

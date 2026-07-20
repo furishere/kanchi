@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Post } from "@/components/Post";
-import { Tags } from "@/components/Tags";
+import { Post } from "@/components/post/Post";
+import { Tags } from "@/components/post/Tags";
 
 interface FeedPost {
   id: string;

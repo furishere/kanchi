@@ -1,12 +1,13 @@
 "use client"
 import React, { useState } from 'react'
-import { HrLine } from './HrLine'
-import {Themetoggle} from "@/components/theme-toggle"
+import {Themetoggle} from "@/components/dark_mode/theme-toggle"
 import { Menu } from 'lucide-react'
 import Link from 'next/link'
-import { Logo } from './Logo'
+import { Buttons } from '../pagesComponent/button'
 
-export const LandingPageNavabar = () => {
+export const LandingPageNavbar = () => {
+    
+
     const navbar = [
         {
             id :1,
@@ -22,11 +23,16 @@ export const LandingPageNavabar = () => {
             title : "community"
         }
     ]
+
+    function signUpPage(){
+
+    }
+
     const[isOpen, setIsOpen] = useState(false)
 
   return <div className='flex flex-col sticky top-0 bg-background'>
     <div className='flex items-center justify-around mt-4 mb-1'>
-    <Logo />
+    <div className='text-[24px] font-sans italic'>kanchi .</div>
     <div className='text-[11px] text-gray-4 font-ibm hidden md:flex gap-4'>
         {navbar.map(nav => (
             <Link href={nav.href} key={nav.id}>
@@ -34,23 +40,15 @@ export const LandingPageNavabar = () => {
             </Link>
         ))}
     </div>
-    <div className='text-[10.5px] font-ibm hidden md:flex gap-4'>
-        <button className="bg-button
-      text-button-text
-      border
-      border-border
-      py-2 px-3 
-      hover:bg-button-text
-      hover:text-button
-      cursor-pointer">LOG IN</button>
-        <button className="bg-button-text
-      text-button
-      border
-      border-border
-      py-2 px-3 
-      hover:bg-button
-      hover:text-button-text
-      cursor-pointer">GET STARTED</button>
+    <div className='text-[10.5px] hidden md:flex gap-4'>
+    <Buttons 
+    children="LOG IN"
+    variant='primary'
+
+    />
+    <Buttons 
+    children="GET STARTED"
+    variant='secondry'/>
     </div>
     <div className=' flex items-center gap-2'>
     <Themetoggle />
@@ -70,6 +68,6 @@ export const LandingPageNavabar = () => {
         ))}
     </div>
     )}
-    <HrLine/>
+    <hr className='border-border'/>
   </div>
 }

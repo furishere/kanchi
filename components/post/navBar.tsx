@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Themetoggle } from "@/components/theme-toggle";
+import { Themetoggle } from "@/components/dark_mode/theme-toggle";
 
 export const NavBar = () => {
   const navbar = [
@@ -13,9 +13,9 @@ export const NavBar = () => {
       href: "/compose",
       title: "compose",
     },{
-      id: 3,
-      href: "/post",
-      title: "post",
+      id : 3,
+      href : "/post",
+      title : "post"
     },
     {
       id: 4,
