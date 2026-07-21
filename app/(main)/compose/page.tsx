@@ -174,6 +174,7 @@ export default function Compose() {
           w-full 
           py-2
           disabled:opacity-50
+          cursor-pointer
           "
         >
           {loading ? "posting..." : "post confession"}

@@ -41,7 +41,9 @@ export default function Home() {
 
     </div>
     <div className="mt-22 mb-22">
-    <Post hasTriggerWarning={true}
+    <Post 
+    postId="post"
+    hasTriggerWarning={true}
     moodName="hopeful"
     anonymousOrId="Anonymous"
     time="2h ago"

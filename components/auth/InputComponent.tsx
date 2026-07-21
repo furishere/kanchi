@@ -32,5 +32,5 @@ export const InputComponent = ({
     value={value}
     onChange={onChage}
     disabled = {disabled}
-    className={`w-full rounded-md border border-border outline-none focus:border-border ${sizes[size]}`} />
+    className={`w-full max-w-md rounded-md border border-border outline-none focus:border-border font-ibm ${sizes[size]}`} />
 }

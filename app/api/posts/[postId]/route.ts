@@ -2,63 +2,62 @@ import { getCurrentUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { postSchema } from "@/validations/post"
 
+
 export async function GET(
-    req:Request,
-    {params} : {
-        params :Promise<{postId : string}>
-    }
-){
-    try{
-    const {postId} = await params
+  req: Request,
+  {
+    params,
+  }: {
+    params: Promise<{ postId: string }>;
+  }
+) {
+  const { postId } = await params;
 
-    const post = await prisma.post.findUnique({
-        where : {
-            id : postId
-        },select :{
-            id : true,
-            content : true,
-            emotion : true,
-            hasTriggerWarning : true,
-            createdAt : true,
-            updatedAt : true,
-            comments : {
-                orderBy : {
-                    createdAt : "desc"
-                }, select :{
-                    id : true, 
-                    content : true,
-                    createdAt : true
-                }
-            },
-            _count :{
-                select : {
-                    likes : true,
-                    comments : true
-                }
-            }
-        }
-    })
+  const post = await prisma.post.findUnique({
+    where: {
+      id: postId,
+    },
+    select: {
+      id: true,
+      content: true,
+      emotion: true,
+      hasTriggerWarning: true,
+      createdAt: true,
 
-    if(!post){
-        return Response.json({
-            message : "post not found"
-        }, {
-            status : 404
-        })
-    }
+      _count: {
+        select: {
+          likes: true,
+          comments: true,
+        },
+      },
 
-    return Response.json({
-        post
-    })
+      comments: {
+        orderBy: {
+          createdAt: "asc",
+        },
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+        },
+      },
+    },
+  });
 
-    } catch(error){
-        console.error(error)
-            return Response.json({
-                message  : "internal server error"
-            },{
-                status : 500
-            })
-    }
+  if (!post) {
+    return Response.json(
+      {
+        message: "Post not found",
+      },
+      {
+        status: 404,
+      }
+    );
+  }
+
+  return Response.json({
+    post,
+  });
 }
 
 export async function DELETE(

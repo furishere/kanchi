@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
 import { Post } from "@/components/post/Post";
 import { Buttons } from "@/components/pagesComponent/button";
 
@@ -32,93 +34,163 @@ interface ProfileData {
 export default function Profile() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    async function getProfile() {
-      const res = await fetch("/api/profile");
+  const router = useRouter();
 
-      if (!res.ok) {
-        setLoading(false);
-        return;
-      }
+  function editProfile() {
+    router.push("/profile/edit");
+  }
+
+  async function deleteAccount() {
+    const confirmed = window.confirm(
+      "Are you sure you want to permanently delete your account?"
+    );
+
+    if (!confirmed) return;
+
+    setDeleting(true);
+
+    try {
+      const res = await fetch("/api/profile", {
+        method: "DELETE",
+      });
 
       const data = await res.json();
 
-      setProfile(data.profile);
-      setLoading(false);
+      if (!res.ok) {
+        alert(data.message);
+        return;
+      }
+
+      alert(data.message);
+
+      router.push("/register");
+      router.refresh();
+    } catch {
+      alert("Something went wrong.");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  useEffect(() => {
+    async function getProfile() {
+      try {
+        const res = await fetch("/api/profile", {
+          cache: "no-store",
+        });
+
+        if (!res.ok) {
+          setLoading(false);
+          return;
+        }
+
+        const data = await res.json();
+
+        setProfile(data.profile);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
     }
 
     getProfile();
   }, []);
 
   if (loading) {
-    return <div className="mt-10 text-center">Loading...</div>;
+    return (
+      <div className="mt-10 text-center font-ibm uppercase">
+        Loading...
+      </div>
+    );
   }
 
   if (!profile) {
-    return <div className="mt-10 text-center">Profile not found.</div>;
+    return (
+      <div className="mt-10 text-center font-ibm uppercase">
+        Profile not found.
+      </div>
+    );
   }
 
   return (
-    <div className="w-full max-w-xl mx-auto flex flex-col mt-8">
+    <div className="mx-auto mt-8 flex w-full max-w-xl flex-col">
       <div>
-        <div className="text-[11px] text-gray-400 font-ibm">
+        <div className="font-ibm text-[11px] text-gray-400">
           @{profile.username}
         </div>
 
-        <div className="text-[28px] font-sans font-bold italic">
+        <div className="font-sans text-[28px] italic font-bold">
           {profile.bio || "No bio yet"}
         </div>
 
-        <div className="flex gap-4">
+        <div className="mt-2 flex gap-6">
           <div>
-            <div className="text-[16px] mt-2">
+            <div className="text-[16px]">
               {profile._count.posts}
             </div>
 
-            <div className="font-ibm text-gray-400 text-[9.5px] uppercase">
+            <div className="font-ibm text-[9.5px] uppercase text-gray-400">
               Posts
             </div>
           </div>
 
           <div>
-            <div className="text-[16px] mt-2">
+            <div className="text-[16px]">
               {new Date(profile.createdAt).toLocaleDateString("en-US", {
                 month: "short",
                 year: "numeric",
               })}
             </div>
 
-            <div className="font-ibm text-gray-400 text-[9.5px] uppercase">
-              Date Joined
+            <div className="font-ibm text-[9.5px] uppercase text-gray-400">
+              Joined
             </div>
           </div>
         </div>
 
-        <div className="flex gap-2 tracking-widest text-[10.5px] mt-4 mb-4">
-          <Buttons children="Edit Account" variant="tertiary"/>
-          <Buttons children="Delete Account" variant="tertiary"/>
+        <div className="mb-4 mt-5 flex gap-2">
+          <Buttons
+            children="Edit Profile"
+            variant="tertiary"
+            onClick={editProfile}
+          />
+
+          <Buttons
+            children={deleting ? "Deleting..." : "Delete Account"}
+            variant="tertiary"
+            onClick={deleteAccount}
+          />
         </div>
       </div>
 
       <hr className="border-border" />
 
-      <div className="text-gray-400 uppercase text-[10.5px] mt-4">
+      <div className="mt-4 text-[10.5px] uppercase text-gray-400">
         Your Confessions
       </div>
 
-      {profile.posts.map((post) => (
-        <Post
-          key={post.id}
-          anonymousOrId="anonymous"
-          commentNumber={post.commentCount}
-          content={post.content}
-          time={new Date(post.createdAt).toLocaleDateString()}
-          hasTriggerWarning={post.hasTriggerWarning}
-          moodName={post.emotion}
-          likeNumber={post.likeCount}
-        />
-      ))}
+      {profile.posts.length === 0 ? (
+        <div className="mt-6 text-center font-ibm text-[12px] text-gray-400">
+          You haven't posted anything yet.
+        </div>
+      ) : (
+        profile.posts.map((post) => (
+          <Post
+          postId={post.id}
+            key={post.id}
+            anonymousOrId="anonymous"
+            moodName={post.emotion}
+            hasTriggerWarning={post.hasTriggerWarning}
+            time={new Date(post.createdAt).toLocaleDateString()}
+            content={post.content}
+            commentNumber={post.commentCount}
+            likeNumber={post.likeCount}
+          />
+        ))
+      )}
     </div>
   );
 }

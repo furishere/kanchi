@@ -6,7 +6,9 @@ interface ParagraphProps {
 }
 
 const size = {
-    sm : ""
+    sm : "",
+    md : "",
+    lg : ""
 } 
 
 export const pragraph = () => {

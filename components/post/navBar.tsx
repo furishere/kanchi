@@ -12,13 +12,9 @@ export const NavBar = () => {
       id: 2,
       href: "/compose",
       title: "compose",
-    },{
-      id : 3,
-      href : "/post",
-      title : "post"
     },
     {
-      id: 4,
+      id: 3,
       href: "/profile",
       title: "profile",
     },
@@ -33,7 +29,7 @@ export const NavBar = () => {
           <div className="flex gap-8">
             {navbar.map((nav) => (
               <Link
-                className="text-[13.5px] uppercase text-gray-400 font-ibm"
+                className="text-[13.5px] uppercase text-gray-4 font-ibm"
                 href={nav.href}
                 key={nav.id}
               >

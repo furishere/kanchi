@@ -18,12 +18,16 @@ interface FeedPost {
 const emotions = [
   "All",
   "Lonely",
+  "Heartbroken",
   "Hopeful",
   "Grateful",
   "Anxious",
+  "Confused",
   "Regretful",
   "Angry",
+  "BurnedOut",
   "Loved",
+  "Guilty",
 ];
 
 export default function Feed() {
@@ -60,9 +64,17 @@ export default function Feed() {
     fetchPosts();
   }, [selectedEmotion]);
 
+  if (loading) {
+    return (
+      <div className="mt-8 text-center font-ibm uppercase">
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col justify-center">
-      <div className="mt-4 mb-3 flex flex-wrap">
+      <div className="mt-4 mb-3 flex flex-wrap gap-2">
         {emotions.map((emotion) => (
           <Tags
             key={emotion}
@@ -75,25 +87,22 @@ export default function Feed() {
 
       <hr className="border-border" />
 
-      {loading ? (
-        <div className="mt-8 text-center text-gray-4 font-ibm uppercase text-sm">
-          Loading...
-        </div>
-      ) : posts.length === 0 ? (
-        <div className="mt-8 text-center text-gray-4 font-ibm uppercase text-sm">
+      {posts.length === 0 ? (
+        <div className="mt-8 text-center font-ibm uppercase">
           No posts found.
         </div>
       ) : (
         posts.map((post) => (
           <Post
             key={post.id}
+            postId={post.id}
             anonymousOrId="anonymous"
-            commentNumber={post.commentCount}
             content={post.content}
-            time={new Date(post.createdAt).toLocaleDateString()}
-            hasTriggerWarning={post.hasTriggerWarning}
             moodName={post.emotion}
+            hasTriggerWarning={post.hasTriggerWarning}
+            time={new Date(post.createdAt).toLocaleDateString()}
             likeNumber={post.likeCount}
+            commentNumber={post.commentCount}
           />
         ))
       )}

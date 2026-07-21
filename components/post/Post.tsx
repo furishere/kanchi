@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { Heart, MessageCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface POST {
+  postId: string;
   moodName: string;
   hasTriggerWarning: boolean;
   anonymousOrId: string;
@@ -14,6 +16,7 @@ interface POST {
 }
 
 export const Post = ({
+  postId,
   hasTriggerWarning,
   anonymousOrId,
   time,
@@ -23,10 +26,14 @@ export const Post = ({
   moodName,
 }: POST) => {
   const [revealed, setRevealed] = useState(!hasTriggerWarning);
+  const router = useRouter();
 
   return (
-    <div className="flex justify-center mt-4">
-      <div className="p-4 w-full max-w-xs md:max-w-xl border border-border">
+    <div
+      onClick={() => router.push(`/post/${postId}`)}
+      className="flex justify-center mt-4 cursor-pointer"
+    >
+      <div className="p-4 w-full max-w-xs lg:max-w-xl border border-border">
         <span className="border px-2 py-1 font-ibm text-[9.5px] uppercase">
           {moodName}
         </span>
@@ -42,35 +49,26 @@ export const Post = ({
           </div>
         ) : (
           <button
-            onClick={() => setRevealed(true)}
-            className="w-full max-w-xl border border-dashed border-foreground text-center py-2 text-[11.5px] font-ibm bg-[#141414] cursor-pointer hover:bg-[#1b1b1b] transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              setRevealed(true);
+            }}
+            className="w-full border border-dashed py-2"
           >
             Trigger warning • Tap to reveal
           </button>
         )}
 
-        <div className="bg-gray-4 mt-4 mb-2 h-px w-full" />
-
-        <div className="flex mt-4 gap-5">
-          <button className="flex items-center gap-1 text-gray-4 hover:text-white transition-colors">
+        <div className="mt-4 border-t border-border pt-4 flex gap-5">
+          <div className="flex gap-1 items-center">
             <Heart size={14} />
+            {likeNumber}
+          </div>
 
-            <span className="font-ibm text-[10.5px]">
-              {likeNumber}
-            </span>
-
-            <span className="font-ibm text-[10.5px] uppercase">
-              Relate
-            </span>
-          </button>
-
-          <button className="flex items-center gap-1 text-gray-4 hover:text-white transition-colors">
+          <div className="flex gap-1 items-center">
             <MessageCircle size={14} />
-
-            <span className="font-ibm text-[10.5px]">
-              {commentNumber}
-            </span>
-          </button>
+            {commentNumber}
+          </div>
         </div>
       </div>
     </div>
