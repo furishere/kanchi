@@ -1,3 +1,4 @@
+
 import { LandingPageBox } from "@/components/landing/LandingPageBox";
 import { LandingPageAnotherBox } from "@/components/landing/LandingPageAnotherBox";
 import { Post } from "@/components/post/Post";
@@ -5,7 +6,9 @@ import Link from "next/link"
 import { Buttons } from "@/components/pagesComponent/button";
 
 
+
 export default function Home() {
+
   const navbar = [
         {
             id :1,
@@ -22,28 +25,36 @@ export default function Home() {
         }
     ]
 
+
   return <div id="community" className="flex justify-center items-center flex-col mt-12">
     <div className="flex justify-center">
-    <div className="font-ibm text-xs md:text-[10.5px] border border-dashed text-center text-gray-4 py-1 px-3 tracking-widest">
+    <div className="font-ibm text-[9px] md:text-[10.5px] border border-dashed text-center text-gray-4 py-1 px-3 tracking-widest">
       NO ACCOUNT REQUIRED TO READ
     </div>
     </div>
     <div className="text-center text-[32px] font-sans itlaic md:text-[52px] italic mt-4">
       Say it. Stay unamed.
     </div>
-    <div className="ibm tracking-wider text-gray-4 mt-4 text-center flex justify-center align-center">
-    <div className="w-full max-w-xs md:max-w-sm text-sm md:text-[13.5px]">
+    <div className="tracking-wider text-gray-4 mt-4 text-center flex justify-center align-center">
+    <div className="w-full max-w-xs md:max-w-sm text-sm md:text-[13.5px">
     Kanchi is a place to put down what you can't say out loud, no name attached, no judgment, just people who get it
     </div>
     </div>
-    <div className="flex justify-center text-[12px] mt-4">
-      <Buttons children={"START WRITING, IT'S FREE"}/>
+    <div className="flex flex-col gap-2 justify-center text-[12px] mt-10">
+      <Link href={"/register"}>
+         <Buttons children={"START WRITING, IT'S FREE"}/>
+      </Link>
+      <Link href={"/login"}>
+       <button className="bg-button-text text-button mt-1 items-center text-center align-middle border border-border hover:bg-button-text hover:text-button cursor-pointer py-2 px-3 uppercase w-full max-w-md lg:max-w-xl">
+        LOG IN
+       </button>
+      </Link>
 
     </div>
-    <div className="mt-22 mb-22">
+    <div className="mt-19 mb-22">
     <Post 
     postId="post"
-    hasTriggerWarning={true}
+    hasTriggerWarning={false}
     moodName="hopeful"
     anonymousOrId="Anonymous"
     time="2h ago"
@@ -59,7 +70,7 @@ export default function Home() {
       <div className="text-foreground text-[24px] md:text-[32px] font-sans font-bold italic">
         Built for saying the quiet part
       </div>
-      <div className="font-ibm text-[12px] uppercase text-gray-4 w-full max-w-sm text-center">
+      <div className="font-ibm text-[12px] uppercase text-gray-4 w-full max-w-xs text-center ml-2 mr-2">
         Every part of it is designed around one idea, you shouldn't need your name to be heard.
       </div>
 
@@ -119,9 +130,11 @@ export default function Home() {
       <div className="mt-1 uppercase font-ibm text-gray-4 text-[12.5px]">
         FREE TO JOIN · FREE TO READ · ALWAYS ANONYMOUS
       </div>
-      <div className="mb-8  text-[12px]">
-      <Buttons children="Create your accound"
+      <div className="mb-8  text-[12px] mt-9 mx-4 ">
+        <Link href={"/register"}>
+        <Buttons children="Create your accound"
       />
+        </Link>
       </div>
     </div>
     <div className="border border-border"/>
@@ -142,11 +155,11 @@ export default function Home() {
     </div>
     </div>  
     <hr className="border-border"/>
-    <div className="flex justify-between font-ibm text-gray-4 mt-4 w-full text-[10.5px] uppercase mb-12">
-      <div>
+    <div className="flex justify-between font-ibm text-gray-4 mt-4 w-full text-[10.5px] uppercase mb-12 ">
+      <div className="mx-6">
         © 2026 KANCHI .
       </div>
-      <div>
+      <div className="mx-6">
         BUILT BY <Link href={"https://github.com/furishere"}> Hariom Mandal </Link>
       </div>
     </div>

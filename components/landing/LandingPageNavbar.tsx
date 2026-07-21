@@ -41,14 +41,17 @@ export const LandingPageNavbar = () => {
         ))}
     </div>
     <div className='text-[10.5px] hidden md:flex gap-4'>
-    <Buttons 
-    children="LOG IN"
-    variant='primary'
+    <Link href={"/login"}>
+    <button className='bg-button text-button-text border border-border hover:bg-button-text hover:text-button cursor-pointer py-2 px-3 uppercase w-full max-w-md lg:max-w-xl'>
+          Log In
+    </button>
+    </Link>
 
-    />
+    <Link href={"/register"}>
     <Buttons 
     children="GET STARTED"
     variant='secondry'/>
+    </Link>
     </div>
     <div className=' flex items-center gap-2'>
     <Themetoggle />

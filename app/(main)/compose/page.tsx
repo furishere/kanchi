@@ -77,7 +77,8 @@ export default function Compose() {
 
 
   return (
-    <div className="w-full flex flex-col justify-center max-w-xs md:max-w-xl">
+    <div className="flex justify-center items-center">
+    <div className="w-full flex flex-col justify-center items max-w-xs md:max-w-xl">
 
       <div className="mt-12">
 
@@ -183,6 +184,7 @@ export default function Compose() {
       </div>
 
 
+    </div>
     </div>
   );
 }

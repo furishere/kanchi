@@ -24,9 +24,9 @@ export const NavBar = () => {
     <div className="sticky top-0 bg-background w-full">
       <div className="w-full max-w-xl mx-auto">
 
-        <div className="flex items-center justify-between mt-4 mb-1">
+        <div className="flex items-center justify-between mt-4 mb-1 ml-4 mr-4">
 
-          <div className="flex gap-8">
+          <div className="flex gap-8 ">
             {navbar.map((nav) => (
               <Link
                 className="text-[13.5px] uppercase text-gray-4 font-ibm"
@@ -37,8 +37,8 @@ export const NavBar = () => {
               </Link>
             ))}
           </div>
-
-          <Themetoggle />
+            
+          <Themetoggle/>
 
         </div>
 

@@ -74,7 +74,8 @@ export default function Feed() {
 
   return (
     <div className="flex flex-col justify-center">
-      <div className="mt-4 mb-3 flex flex-wrap gap-2">
+      <div className="mt-4 ml-2 mr-2 mb-3 flex flex-wrap gap-2">
+        <div className="flex overflow-x-auto  scrollbar-none">
         {emotions.map((emotion) => (
           <Tags
             key={emotion}
@@ -83,6 +84,7 @@ export default function Feed() {
             onClick={() => setSelectedEmotion(emotion)}
           />
         ))}
+        </div>
       </div>
 
       <hr className="border-border" />

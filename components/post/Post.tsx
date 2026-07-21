@@ -38,7 +38,7 @@ export const Post = ({
           {moodName}
         </span>
 
-        <div className="font-ibm text-gray-400 text-[9.5px] flex gap-4 mt-3 mb-4 uppercase">
+        <div className="font-ibm text-gray-4 text-[9.5px] flex gap-4 mt-3 mb-4 uppercase">
           <span>{anonymousOrId}</span>
           <span>{time}</span>
         </div>
@@ -53,17 +53,13 @@ export const Post = ({
               e.stopPropagation();
               setRevealed(true);
             }}
-            className="w-full border border-dashed py-2"
+            className="w-full border border-dashed py-2 font-ibm text-gray-4"
           >
             Trigger warning • Tap to reveal
           </button>
         )}
 
         <div className="mt-4 border-t border-border pt-4 flex gap-5">
-          <div className="flex gap-1 items-center">
-            <Heart size={14} />
-            {likeNumber}
-          </div>
 
           <div className="flex gap-1 items-center">
             <MessageCircle size={14} />

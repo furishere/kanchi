@@ -47,59 +47,57 @@ export default function Login() {
   }
 
   return (
-    <div className="my-50 flex flex-col justify-center">
-      <div className="flex justify-center font-sans text-[24px]">
-        Login
-      </div>
+  <div className="my-16 flex w-full flex-col items-center px-4 sm:my-24">
+    <h1 className="font-sans text-[24px]">
+      Login
+    </h1>
 
-      <div className="mt-6 flex flex-col items-center gap-3">
-        <InputComponent
-          type="email"
-          placeholder="email"
-          value={email}
-          onChage={(e) => setEmail(e.target.value)}
-          size="sm"
-        />
+    <div className="mt-6 flex w-full max-w-md flex-col gap-3">
+      <InputComponent
+        type="email"
+        placeholder="email"
+        value={email}
+        onChage={(e) => setEmail(e.target.value)}
+        size="sm"
+      />
 
-        <InputComponent
-          type="password"
-          placeholder="password"
-          value={password}
-          onChage={(e) => setPassword(e.target.value)}
-          size="sm"
-        />
+      <InputComponent
+        type="password"
+        placeholder="password"
+        value={password}
+        onChage={(e) => setPassword(e.target.value)}
+        size="sm"
+      />
 
-        {error && (
-          <p className="text-sm text-red-500">
-            {error}
-          </p>
-        )}
-      </div>
+      {error && (
+        <p className="text-sm text-red-500">
+          {error}
+        </p>
+      )}
 
-      <div className="mt-8 flex justify-center">
-        <button
-          onClick={handleLogin}
-          disabled={
-            loading ||
-            !email.trim() ||
-            !password
-          }
-          className="
-            w-full
-            max-w-md
-            bg-button
-            py-2
-            font-ibm
-            text-[11px]
-            uppercase
-            text-button-text
-            disabled:cursor-not-allowed
-            disabled:opacity-50
-          "
-        >
-          {loading ? "Logging In..." : "Log In"}
-        </button>
-      </div>
+      <button
+        onClick={handleLogin}
+        disabled={
+          loading ||
+          !email.trim() ||
+          !password
+        }
+        className="
+          mt-5
+          w-full
+          bg-button
+          py-2
+          font-ibm
+          text-[11px]
+          uppercase
+          text-button-text
+          disabled:cursor-not-allowed
+          disabled:opacity-50
+        "
+      >
+        {loading ? "Logging In..." : "Log In"}
+      </button>
     </div>
-  );
+  </div>
+);
 }

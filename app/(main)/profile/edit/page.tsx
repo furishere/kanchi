@@ -81,52 +81,48 @@ export default function EditProfile() {
   }
 
   return (
-    <div className="mt-24 flex flex-col items-center">
-  <label className="w-full max-w-md">
-    <div className="m-2 font-ibm text-[13px] uppercase text-gray-400">
-      New username
+     <div className="mx-auto mt-16 w-full max-w-md px-4 sm:mt-24">
+    <div className="flex flex-col">
+      <label>
+        <div className="mb-2 font-ibm text-[13px] uppercase text-gray-4">
+          New username
+        </div>
+
+        <InputComponent
+          placeholder="change username"
+          type="text"
+          value={username}
+          onChage={(e) => setUsername(e.target.value)}
+          size="sm"
+        />
+      </label>
+
+      <label className="mt-6">
+        <div className="mb-2 font-ibm text-[13px] uppercase text-gray-4">
+          Add bio
+        </div>
+
+        <InputComponent
+          placeholder="tell people about yourself"
+          type="text"
+          value={bio}
+          onChage={(e) => setBio(e.target.value)}
+          size="sm"
+        />
+      </label>
+
+      {error && (
+        <p className="mt-4 text-sm text-red-500">{error}</p>
+      )}
+
+      <button
+        onClick={handleUpdate}
+        disabled={loading}
+        className="mt-8 w-full bg-button py-2 font-ibm text-[11px] uppercase text-button-text disabled:opacity-50 cursor-pointer"
+      >
+        {loading ? "Updating..." : "Update Profile"}
+      </button>
     </div>
-
-    <InputComponent
-      placeholder="change username"
-      type="text"
-      value={username}
-      onChage={(e) => setUsername(e.target.value)}
-      size="sm"
-    />
-  </label>
-
-  <label className="mt-4 w-full max-w-md">
-    <div className="m-2 font-ibm text-[13px] uppercase text-gray-400">
-      Add bio
-    </div>
-
-    <InputComponent
-      placeholder="tell people about yourself"
-      type="text"
-      value={bio}
-      onChage={(e) => setBio(e.target.value)}
-      size="sm"
-    />
-  </label>
-
-  <button
-    className="
-      mt-8
-      w-full
-      max-w-md
-      cursor-pointer
-      bg-button
-      py-2
-      font-ibm
-      text-[11px]
-      uppercase
-      text-button-text
-      disabled:opacity-50
-    "
-  >
-    Update Profile
-  </button>
-</div>
+  </div>
   );
 }

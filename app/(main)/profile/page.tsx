@@ -117,8 +117,8 @@ export default function Profile() {
 
   return (
     <div className="mx-auto mt-8 flex w-full max-w-xl flex-col">
-      <div>
-        <div className="font-ibm text-[11px] text-gray-400">
+      <div className="flex justify-center flex-col items-center xl:items-start">
+        <div className="font-ibm text-[11px] text-gray-4">
           @{profile.username}
         </div>
 
@@ -128,24 +128,24 @@ export default function Profile() {
 
         <div className="mt-2 flex gap-6">
           <div>
-            <div className="text-[16px]">
+            <div className="text-[16px] font-ibm">
               {profile._count.posts}
             </div>
 
-            <div className="font-ibm text-[9.5px] uppercase text-gray-400">
+            <div className="font-ibm text-[9.5px] uppercase text-gray-4">
               Posts
             </div>
           </div>
 
           <div>
-            <div className="text-[16px]">
+            <div className="text-[16px] font-ibm">
               {new Date(profile.createdAt).toLocaleDateString("en-US", {
                 month: "short",
                 year: "numeric",
               })}
             </div>
 
-            <div className="font-ibm text-[9.5px] uppercase text-gray-400">
+            <div className="font-ibm text-[9.5px] uppercase text-gray-4">
               Joined
             </div>
           </div>
@@ -168,7 +168,7 @@ export default function Profile() {
 
       <hr className="border-border" />
 
-      <div className="mt-4 text-[10.5px] uppercase text-gray-400">
+      <div className="mt-4 text-[10.5px] uppercase text-gray-4 font-ibm text-center xl:text-left">
         Your Confessions
       </div>
 
