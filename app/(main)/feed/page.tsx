@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Post } from "@/components/post/Post";
 import { Tags } from "@/components/post/Tags";
+import type { Metadata } from "next";
 
 interface FeedPost {
   id: string;
@@ -29,6 +30,7 @@ const emotions = [
   "Loved",
   "Guilty",
 ];
+
 
 export default function Feed() {
   const [posts, setPosts] = useState<FeedPost[]>([]);
