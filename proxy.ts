@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export function middleware(req: NextRequest){
+export function proxy(req: NextRequest){
     const token = req.cookies.get("token")?.value
 
     if(!token){
@@ -16,6 +16,9 @@ export function middleware(req: NextRequest){
 
 export const config = {
     matcher : [
-        "/api/posts/:path*"
+        ["/api/posts/:path*",
+         "/api/comments/:path*",
+         "/api/profile/:path*"
+        ]
     ]
 }
