@@ -16,9 +16,9 @@ export function proxy(req: NextRequest){
 
 export const config = {
     matcher : [
-        ["/api/posts/:path*",
+        "/api/posts/:path*",
          "/api/comments/:path*",
          "/api/profile/:path*"
-        ]
+        
     ]
 }

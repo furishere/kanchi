@@ -39,7 +39,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen bg-background text-foreground">
       <Themeprovider>
-      <main className="mx-auto w-full max-w-xl">
+      <main>
       {children}  
       </main>
       </Themeprovider>

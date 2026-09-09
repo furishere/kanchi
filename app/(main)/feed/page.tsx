@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Post } from "@/components/post/Post";
 import { Tags } from "@/components/post/Tags";
 import type { Metadata } from "next";
+import SideBar from "@/components/Home/SideBar";
 
 interface FeedPost {
   id: string;
@@ -75,8 +76,12 @@ export default function Feed() {
   }
 
   return (
-    <div className="flex flex-col justify-center">
-      <div className="mt-4 ml-2 mr-2 mb-3 flex flex-wrap gap-2">
+    <div className="flex">
+      <div>
+        <SideBar />
+      </div>
+      <div className="w-full">
+      <div className="p-2 flex flex-wrap gap-2 text-center  justify-center items-center">
         <div className="flex overflow-x-auto  scrollbar-none">
         {emotions.map((emotion) => (
           <Tags
@@ -110,6 +115,7 @@ export default function Feed() {
           />
         ))
       )}
+    </div>
     </div>
   );
 }

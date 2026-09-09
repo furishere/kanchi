@@ -1,4 +1,4 @@
-import { NavBar } from "@/components/post/navBar";
+import { NavBar } from "@/components/Home/navBar";
 import { Themeprovider } from "@/components/dark_mode/theme-provider";
 
 export default function MainLayout({

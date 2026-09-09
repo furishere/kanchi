@@ -6,10 +6,6 @@ export const userSignUp = z.object({
         .min(3, "username must be at least 3 characters")
         .trim()
         .max(30),
-    email : z
-        .string()
-        .email()
-        .trim(),
     password : z
         .string()
         .trim()
@@ -19,10 +15,11 @@ export const userSignUp = z.object({
 export type UserSignUpType = z.infer<typeof userSignUp>
 
 export const userSignIn = z.object({
-    email : z
+    username : z
         .string()
-        .email()
-        .trim(),
+        .min(3, "username must be at least 3 characters")
+        .trim()
+        .max(30),
     password : z
         .string()
         .trim()
