@@ -23,9 +23,7 @@ export const NavBar = () => {
   return (
     <div className="sticky top-0 bg-background w-full">
       <div >
-
         <div className="flex items-center justify-between p-3">
-
           <div className="flex justify-center text-center  w-full">
             <div>
             {navbar
@@ -36,16 +34,11 @@ export const NavBar = () => {
                   {nav.title}
                 </Link>
               ))
-
             }
             </div>
           </div>
-            
-
         </div>
-
         <hr className="border-border" />
-
       </div>
     </div>
   );

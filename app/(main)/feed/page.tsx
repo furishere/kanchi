@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Post } from "@/components/post/Post";
 import { Tags } from "@/components/post/Tags";
+import  Heading  from "@/components/Home/Feed";
 import type { Metadata } from "next";
 import SideBar from "@/components/Home/SideBar";
 
@@ -81,6 +82,7 @@ export default function Feed() {
         <SideBar />
       </div>
       <div className="w-full">
+      <Heading />
       <div className="p-2 flex flex-wrap gap-2 text-center  justify-center items-center">
         <div className="flex overflow-x-auto  scrollbar-none">
         {emotions.map((emotion) => (

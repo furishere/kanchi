@@ -24,7 +24,6 @@ enum Emotion {
 model User {
   id              String @id @default(cuid())
   username        String @unique
-  email           String @unique
   password        String?
 
   emailVerified   Boolean @default(false)

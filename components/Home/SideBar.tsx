@@ -12,17 +12,8 @@ const sidebar = [{
     href : "/compose"
 },{
     id : 3,
-    title : "Notification",
-    href : "/notification"
-},{
-    id : 4,
     title : "Profile",
     href : "/profile"
-},
-{
-    id : 5,
-    title : "Draft",
-    href : "/draft"
 }]
 
 function SideBar() {

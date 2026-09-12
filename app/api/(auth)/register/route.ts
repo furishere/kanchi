@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs"
 
 export async function POST(req: Request){
     try{
-        const body = await req.json()
+    const body = await req.json()
 
     const parseBody = userSignUp.safeParse(body)
     if(!parseBody.success){
@@ -15,11 +15,10 @@ export async function POST(req: Request){
             status : 400
         })
     }
-    const {username, email, password} = parseBody.data
+    const {username, password} = parseBody.data
 
     const existingUser = await prisma.user.findUnique({
         where :{
-            email : email,
             username : username
         }
     })
@@ -36,7 +35,6 @@ export async function POST(req: Request){
 
     const user = await prisma.user.create({
         data : {
-            email,
             username,
             password : hashedpassword
         }
@@ -47,7 +45,6 @@ export async function POST(req: Request){
         user : {
             id : user.id,
             username : user.username,
-            email : user.email
         }
     },{
         status : 201

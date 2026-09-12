@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, Newsreader, Public_Sans } from "next/font/google";
 import "./globals.css";
 import { Themeprovider } from "@/components/dark_mode/theme-provider";
+import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 
 
 const publicSans = Public_Sans({
@@ -40,6 +41,8 @@ export default function RootLayout({
       <body className="min-h-screen bg-background text-foreground">
       <Themeprovider>
       <main>
+      <ServiceWorkerRegistration />
+
       {children}  
       </main>
       </Themeprovider>

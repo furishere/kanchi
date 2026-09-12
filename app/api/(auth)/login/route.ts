@@ -19,11 +19,11 @@ export async function POST(req: Request){
         })
     }
 
-    const {email, password} = parseBody.data
+    const {username, password} = parseBody.data
 
     const user = await prisma.user.findUnique({
         where : {
-            email,
+            username,
         }
     })
 
@@ -63,7 +63,6 @@ export async function POST(req: Request){
         user : {
             id : user.id,
             username : user.username,
-            email : user.email
         }
     },{
         status : 200
