@@ -6,7 +6,6 @@ import { useState } from "react";
 
 export default function Register() {
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -26,7 +25,6 @@ export default function Register() {
         },
         body: JSON.stringify({
           username: username.trim(),
-          email: email.trim(),
           password,
         }),
       });
@@ -63,14 +61,6 @@ export default function Register() {
       />
 
       <InputComponent
-        type="email"
-        placeholder="email"
-        value={email}
-        onChage={(e) => setEmail(e.target.value)}
-        size="sm"
-      />
-
-      <InputComponent
         type="password"
         placeholder="password"
         value={password}
@@ -89,7 +79,6 @@ export default function Register() {
         disabled={
           loading ||
           !username.trim() ||
-          !email.trim() ||
           !password
         }
         className="

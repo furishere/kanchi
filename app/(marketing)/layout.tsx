@@ -7,7 +7,7 @@ export default function LandingLayout({
 }) {
   return (
       <div>
-        <LandingPageNavbar />
+        {/* <LandingPageNavbar /> */}
         {children}
       </div>
   );

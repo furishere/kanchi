@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -24,7 +24,7 @@ export default function Login() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: email.trim(),
+          username: username.trim(),
           password,
         }),
       });
@@ -54,10 +54,10 @@ export default function Login() {
 
     <div className="mt-6 flex w-full max-w-md flex-col gap-3">
       <InputComponent
-        type="email"
-        placeholder="email"
-        value={email}
-        onChage={(e) => setEmail(e.target.value)}
+        type="text"
+        placeholder="username"
+        value={username}
+        onChage={(e) => setUsername(e.target.value)}
         size="sm"
       />
 
@@ -79,7 +79,7 @@ export default function Login() {
         onClick={handleLogin}
         disabled={
           loading ||
-          !email.trim() ||
+          !username.trim() ||
           !password
         }
         className="

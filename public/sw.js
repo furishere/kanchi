@@ -33,12 +33,10 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const request = event.request;
 
-  // Don't interfere with API requests
   if (request.url.includes("/api/")) {
     return;
   }
 
-  // Don't cache non-GET requests
   if (request.method !== "GET") {
     return;
   }

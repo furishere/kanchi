@@ -79,7 +79,7 @@ export default function Feed() {
   return (
     <div className="flex">
       <div>
-        <SideBar />
+        {/* <SideBar /> */}
       </div>
       <div className="w-full">
       <Heading />
