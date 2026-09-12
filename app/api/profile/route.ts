@@ -143,8 +143,6 @@ export async function PATCH(
         }, select : {
                 id: true,
                 username: true,
-                email: true,
-                emailVerified: true,
                 bio: true,
                 updatedAt: true,
         }
