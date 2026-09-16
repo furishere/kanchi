@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Heart, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface POST {
@@ -31,20 +31,20 @@ export const Post = ({
   return (
     <div
       onClick={() => router.push(`/post/${postId}`)}
-      className="flex justify-center mt-4 cursor-pointer"
+      className="mt-4 w-full cursor-pointer border-b border-border"
     >
-      <div className="p-4 w-full max-w-xs lg:max-w-xl border border-border">
+      <div className="w-full p-4">
         <span className="border px-2 py-1 font-ibm text-[9.5px] uppercase">
           {moodName}
         </span>
 
-        <div className="font-ibm text-gray-4 text-[9.5px] flex gap-4 mt-3 mb-4 uppercase">
+        <div className="mt-3 mb-4 flex gap-4 font-ibm text-[9.5px] uppercase text-gray-4">
           <span>{anonymousOrId}</span>
           <span>{time}</span>
         </div>
 
         {revealed ? (
-          <div className="font-ibm text-[13.5px] whitespace-pre-wrap">
+          <div className="whitespace-pre-wrap font-ibm text-[13.5px]">
             {content}
           </div>
         ) : (
@@ -59,9 +59,8 @@ export const Post = ({
           </button>
         )}
 
-        <div className="mt-4 border-t border-border pt-4 flex gap-5">
-
-          <div className="flex gap-1 items-center">
+        <div className="mt-5">
+          <div className="flex items-center gap-3 ">
             <MessageCircle size={14} />
             {commentNumber}
           </div>

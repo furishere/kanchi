@@ -1,7 +1,13 @@
 import Link from "next/link";
 
-export const NavBar = () => {
-  const navbar = [
+interface NavBarProps {
+    id : number
+    title : string
+    href : string
+}
+
+export const Footer = () => {
+  const navbar : NavBarProps[] = [
     {
       id: 1,
       href: "/feed",
@@ -20,14 +26,12 @@ export const NavBar = () => {
   ];
 
   return (
-    <div className="sticky top-0 bg-background w-full">
+    <div className="fixed bottom-0 left-0 z-50 w-full bg-background block md:hidden">
       <div >
-        <div className="flex items-center justify-between p-3">
-          <div className="flex justify-center text-center  w-full">
-            <div>
-            {navbar
-              .filter(nav => nav.title == "feed")
-              .map(nav => (
+        <div className="p-3">
+          <div className="w-full">
+            <div className="flex justify-around">
+            {navbar.map(nav => (
                 <Link key={nav.id} href={nav.href}
                 className="text-[13.5px] uppercase text-gray-4 font-ibm text-center">
                   {nav.title}

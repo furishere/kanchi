@@ -78,12 +78,12 @@ export default function Feed() {
 
   return (
     <div className="flex">
-      <div>
-        {/* <SideBar /> */}
+      <div className="hidden md:block">
+        <SideBar />
       </div>
       <div className="w-full">
       <Heading />
-      <div className="p-2 flex flex-wrap gap-2 text-center  justify-center items-center">
+      <div className="p-2 flex flex-wrap gap-2 text-center  justify-center items-center hidden md:block">
         <div className="flex overflow-x-auto  scrollbar-none">
         {emotions.map((emotion) => (
           <Tags

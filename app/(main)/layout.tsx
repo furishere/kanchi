@@ -1,3 +1,4 @@
+import { Footer } from "@/components/Home/Footer";
 import { NavBar } from "@/components/Home/navBar";
 import { Themeprovider } from "@/components/dark_mode/theme-provider";
 
@@ -10,6 +11,7 @@ export default function MainLayout({
     <Themeprovider>
       <div>
         {children}
+        <Footer />
       </div>
     </Themeprovider>
   );
