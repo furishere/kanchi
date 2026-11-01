@@ -77,24 +77,9 @@ export default function Feed() {
   }
 
   return (
-    <div className="flex">
-      <div className="hidden md:block">
-        <SideBar />
-      </div>
-      <div className="w-full">
+    <div className="flex justify-center">
+      <div className="w-full max-w-xl">
       <Heading />
-      <div className="p-2 flex flex-wrap gap-2 text-center  justify-center items-center hidden md:block">
-        <div className="flex overflow-x-auto  scrollbar-none">
-        {emotions.map((emotion) => (
-          <Tags
-            key={emotion}
-            text={emotion}
-            active={selectedEmotion === emotion}
-            onClick={() => setSelectedEmotion(emotion)}
-          />
-        ))}
-        </div>
-      </div>
 
       <hr className="border-border" />
 
