@@ -1,18 +1,19 @@
-import { Footer } from "@/components/Home/Footer";
-import { NavBar } from "@/components/Home/navBar";
-import { Themeprovider } from "@/components/dark_mode/theme-provider";
+import LeftSideBar from "@/components/sideBar/LeftSideBar"
 
 export default function MainLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <Themeprovider>
-      <div>
+    children
+}: {
+    children: React.ReactNode
+}){
+    
+  return <div className="flex w-screen h-screen overflow-hidden">
+    <div className="flex-1 border border-border p-[1rem]">
+      <LeftSideBar />
+    </div>
+      <div className="flex-[1.6] border-border overflow-y-auto p-[1rem]">
         {children}
-        <Footer />
       </div>
-    </Themeprovider>
-  );
+      
+      <div className="flex-1 p-[1rem]"></div>
+    </div>
 }
