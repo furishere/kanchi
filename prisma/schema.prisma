@@ -7,100 +7,213 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Emotion {
-  Lonely
-  Heartbroken
-  Hopeful
-  Grateful
-  Anxious
-  Confused
-  Regretful
-  Angry
-  BurnedOut
-  Loved
-  Guilty
+enum Role {
+  USER
+  MOD
+}
+
+enum Mood {
+  lonely
+  anxious
+  hopeful
+  grateful
+  angry
+  numb
+  heartbroken
+  relieved
+}
+
+enum ContentStatus {
+  VISIBLE
+  HIDDEN
+  REMOVED
 }
 
 enum ReactionType {
   FELT
-  WARMTH
-}
-
-enum NotificationType {
-  REACT
-  REPLY
   WARM
 }
 
-model User {
-  id String @id @default(uuid())
+enum NotificationType {
+  FELT
+  WARM
+  REPLY
+  MOD
+}
 
+enum ReportReason {
+  harm
+  hate
+  identifying
+  spam
+  other
+}
+
+enum ReportStatus {
+  OPEN
+  RESOLVED
+}
+
+model User {
+  id String @id @default(cuid())
   username String @unique
   password String
+  role Role @default(USER)
 
-  bio String?
+  notifyReplies Boolean @default(true)
+  notifyReactions Boolean @default(true)
+  quietHours Json?
+  blurCw Boolean @default(true)
+  hiddenMoods Mood[] @default([])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  posts    Post[]
+  sessions Session[]
+  posts Post[]
   comments Comment[]
-  saved    SavedPost[]
-  Likes    Like[]
+  reactions Reaction[]
+  savedPosts SavedPost[]
+  mutedUsers Mute[] @relation("Muter")
+  mutedBy Mute[] @relation("Muted")
+  notifications Notification[]
+  reports Report[]
+}
 
-  @@index([username])
+model Session {
+  id String @id @default(cuid())
+  userId String 
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Post {
   id String @id @default(cuid())
-
+  authorId String
   body String
+  mood Mood
+  contentWarning String?
+  status ContentStatus @default(VISIBLE)
 
-  emotion           Emotion
-  hasTriggerWarning Boolean @default(false)
+  feltCount Int @default(0)
+  warmCount Int @default(0)
+  replyCount Int @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments Comment[]
-  savedBy  SavedPost[]
-  Likes    Like[]
+  reactions Reaction[]
+  savedBy SavedPost[]
+  notifications Notification[]
+  reports Report[]
+
+  @@index([status, createdAt(sort: Desc)])
+  @@index([mood, status, createdAt(sort: Desc)])
+  @@index([authorId, createdAt(sort: Desc)])
+  @@index([status, feltCount(sort: Desc)])
 }
 
 model Comment {
   id String @id @default(cuid())
-
+  postId String
+  authorId String
+  parentId String?
   body String
+  status ContentStatus @default(VISIBLE)
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user   User   @relation(fields: [userId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  parent Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies Comment[] @relation("CommentReplies")
+
+  notifications Notification[]
+  reports Report[]
+
+  @@index([postId, createdAt(sort: Asc)])
+}
+
+model Reaction {
   userId String
-
-  post   Post   @relation(fields: [postId], references: [id])
   postId String
+  type ReactionType
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId, type])
 }
 
 model SavedPost {
-  id        String   @id @default(cuid())
+  userId String
+  postId String
   createdAt DateTime @default(now())
 
-  postId String
-  post   Post   @relation(fields: [postId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  @@id([userId, postId])
 }
 
-model Like {
-  id String @id @default(cuid())
-
+model Mute {
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  mutedUserId String
+  createdAt DateTime @default(now())
 
-  postId String
-  post   Post   @relation(fields: [postId], references: [id])
+  user User @relation("Muter", fields: [userId], references: [id], onDelete: Cascade)
+  mutedUser User @relation("Muted", fields: [mutedUserId], references: [id], onDelete: Cascade)
+
+  @@id([userId, mutedUserId])
+}
+
+model Notification {
+  id String @id @default(cuid())
+  userId String
+  type NotificationType
+  postId String?
+  commentId String?
+  count Int @default(1)
+  message String?
+  read Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read, updatedAt(sort: Desc)])
+  @@index([userId, postId, type, read])
+}
+
+model Report {
+  id String @id @default(cuid())
+  reporterId String
+  postId String?
+  commentId String?
+  reason ReportReason
+  status ReportStatus @default(OPEN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reporter User @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  post Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([reporterId, postId])
+  @@unique([reporterId, commentId])
+}
+
+model RateLimit {
+  key String @id
+  count Int @default(1)
+  resetAt DateTime
 }
