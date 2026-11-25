@@ -1,62 +1,81 @@
-import { prisma } from "@/lib/prisma"
-import { userSignUp } from "@/validations/auth"
-import bcrypt from "bcryptjs"
+import { registerUser } from "@/lib/auth/auth.servvice";
+import { setAuthCookies } from "@/lib/auth/cookie";
+import { registerSchema } from "@/lib/auth/password";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: Request){
-    try{
-    const body = await req.json()
+export const runtime = "nodejs";
 
-    const parseBody = userSignUp.safeParse(body)
-    if(!parseBody.success){
-        return Response.json({
-            message : "Incorrect Inputs",
-            error : parseBody.error.issues
-        },{
-            status : 400
-        })
+function isUniqueConstraintError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "P2002"
+  );
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body: unknown = await request.json();
+
+    const validation = registerSchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Validation failed",
+          errors: validation.error.flatten().fieldErrors,
+        },
+        { status: 400 }
+      );
     }
-    const {username, password} = parseBody.data
 
-    const existingUser = await prisma.user.findUnique({
-        where :{
-            username : username
-        }
-    })
+    const userAgent = request.headers.get("user-agent") ?? undefined;
 
-    if(existingUser){
-       return Response.json({
-            message : "user already exists",
-        },{
-            status : 409
-        })
+    const ipAddress =
+      request.headers
+        .get("x-forwarded-for")
+        ?.split(",")[0]
+        ?.trim() ?? undefined;
+
+    const result = await registerUser(validation.data, {
+      userAgent,
+      ipAddress,
+    });
+
+    await setAuthCookies(
+      result.accessToken,
+      result.refreshToken
+    );
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Account created successfully",
+        user: result.user,
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Username already exists",
+        },
+        { status: 409 }
+      );
     }
 
-    const hashedpassword = await bcrypt.hash(password, 10)
+    console.error("Registration error:", error);
 
-    const user = await prisma.user.create({
-        data : {
-            username,
-            password : hashedpassword
-        }
-    })
-
-    return Response.json({
-        message : "User Created Successfully",
-        user : {
-            id : user.id,
-            username : user.username,
-        }
-    },{
-        status : 201
-    })
-    } catch(error){
-        if( error instanceof Error){
-            return Response.json({
-            message : "Internal server error",
-            error : error.message
-        },{
-            status : 500
-        })
-        }
-    }
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Something went wrong",
+      },
+      { status: 500 }
+    );
+  }
 }

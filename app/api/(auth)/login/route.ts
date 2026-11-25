@@ -1,86 +1,76 @@
-import { JWT_SECRET } from "@/lib/config"
-import { prisma } from "@/lib/prisma"
-import { userSignIn } from "@/validations/auth"
-import bcrypt from "bcryptjs"
-import jwt from "jsonwebtoken"
+import { loginUser } from "@/lib/auth/auth.servvice";
+import { setAuthCookies } from "@/lib/auth/cookie";
+import { loginSchema } from "@/lib/auth/password";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: Request){
-    try{
-    const body = await req.json()
-    
-    const parseBody = userSignIn.safeParse(body)
-    if(!parseBody.success){
-        return Response.json({
-            message : "Incorrect Inputs",
-            error : parseBody.error.issues
-            
-        },{
-            status : 400
-        })
+export const runtime = "nodejs";
+
+export async function POST(request: NextRequest) {
+  try {
+    const body: unknown = await request.json();
+
+    const validation = loginSchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Validation failed",
+          errors: validation.error.flatten().fieldErrors,
+        },
+        { status: 400 },
+      );
     }
 
-    const {username, password} = parseBody.data
+    const userAgent =
+      request.headers.get("user-agent") ?? undefined;
 
-    const user = await prisma.user.findUnique({
-        where : {
-            username,
-        }
-    })
+    const ipAddress =
+      request.headers
+        .get("x-forwarded-for")
+        ?.split(",")[0]
+        ?.trim() ?? undefined;
 
-    if(!user){
-        return Response.json({
-            message : "User not exits",
-        },{
-            status : 401
-        })
+    const result = await loginUser(validation.data, {
+      userAgent,
+      ipAddress,
+    });
+
+    await setAuthCookies(
+      result.accessToken,
+      result.refreshToken,
+    );
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Logged in successfully",
+        user: result.user,
+      },
+      { status: 200 },
+    );
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "INVALID_CREDENTIALS"
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Invalid username or password",
+        },
+        { status: 401 },
+      );
     }
 
-    if(!user.password){
-        return Response.json({
-            message : "Invalid Credentials"
-        },{
-            status : 401
-        })
-    }
+    console.error("Login error:", error);
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password)
-    if(!isPasswordCorrect){
-        return Response.json({
-            message : "Incorrect Credentials",
-        },{
-            status : 401
-        })
-    }
-
-    const token = jwt.sign({
-        userId : user.id
-    }, JWT_SECRET!,{
-        expiresIn : "7d"
-    })
-
-    const response =  Response.json({
-        message : "Login Successful",
-        user : {
-            id : user.id,
-            username : user.username
-        }
-    },{
-        status : 200
-    })
-
-    response.headers.append(
-        "Set-Cookie",
-        `token=${token}; httpOnly; path=/; Max-Age=31536000; SameSite=Lax`
-    )
-
-    return response
-    } catch(error){
-        if(error instanceof Error){
-            return Response.json({
-            message : "internal server error",
-            error : error.message
-            })
-        }
-    }
-    
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Something went wrong",
+      },
+      { status: 500 },
+    );
+  }
 }
