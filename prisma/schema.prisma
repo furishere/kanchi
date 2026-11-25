@@ -83,10 +83,35 @@ model User {
 model Session {
   id String @id @default(cuid())
   userId String 
+
+  refreshTokenHash String @unique
+
   expiresAt DateTime
-  createdAt DateTime @default(now())
+  revokedAt DateTime? 
+
+  userAgent String?
+  ipAddress String?
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  refreshTokens RefreshToken[]
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  sessionId String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([expiresAt])
 }
 
 model Post {
@@ -182,6 +207,7 @@ model Notification {
   commentId String?
   count Int @default(1)
   message String?
+  quote String?
   read Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
