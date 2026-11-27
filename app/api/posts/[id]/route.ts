@@ -17,6 +17,8 @@ export async function GET(
   context: RouteContext
 ) {
   try {
+
+const user = await getCurrentUser();
     const { id } = await context.params;
 
     if (!id) {
@@ -27,22 +29,38 @@ export async function GET(
     }
 
     const post = await prisma.post.findFirst({
+  where: {
+    id,
+    status: "VISIBLE",
+  },
+  select: {
+    id: true,
+    body: true,
+    mood: true,
+    contentWarning: true,
+    feltCount: true,
+    warmCount: true,
+    replyCount: true,
+    createdAt: true,
+    updatedAt: true,
+
+    _count: {
+      select: {
+        savedBy: true,
+      },
+    },
+
+    savedBy: {
       where: {
-        id,
-        status: "VISIBLE",
+        userId: user?.id ?? "__anonymous__",
       },
       select: {
-        id: true,
-        body: true,
-        mood: true,
-        contentWarning: true,
-        feltCount: true,
-        warmCount: true,
-        replyCount: true,
-        createdAt: true,
-        updatedAt: true,
+        userId: true,
       },
-    });
+      take: 1,
+    },
+  },
+});
 
     if (!post) {
       return NextResponse.json(
@@ -51,9 +69,15 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({
-      post,
-    });
+const { _count, savedBy, ...postData } = post;
+
+return NextResponse.json({
+  post: {
+    ...postData,
+    savedCount: _count.savedBy,
+    isSaved: savedBy.length > 0,
+  },
+});
   } catch (error) {
     console.error("GET_POST_ERROR:", error);
 

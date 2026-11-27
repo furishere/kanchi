@@ -14,6 +14,7 @@ export async function POST(
   request: NextRequest,
   context: RouteContext
 ) {
+    
   try {
     if (!validateOrigin(request)) {
       return csrfError();
@@ -94,6 +95,37 @@ export async function POST(
           createdAt: true,
         },
       });
+      
+const recipient = parentId
+  ? await tx.comment.findUnique({
+      where: { id: parentId },
+      select: { authorId: true },
+    })
+  : await tx.post.findUnique({
+      where: { id: postId },
+      select: { authorId: true },
+    });
+
+if (recipient && recipient.authorId !== user.id) {
+  const notificationEnabled = await tx.user.findUnique({
+    where: { id: recipient.authorId },
+    select: { notifyReplies: true },
+  });
+
+  if (notificationEnabled?.notifyReplies) {
+    await tx.notification.create({
+      data: {
+        userId: recipient.authorId,
+        type: "REPLY",
+        postId,
+        commentId: comment.id,
+        message: "Someone replied to your post.",
+        quote: commentBody.slice(0, 150),
+      },
+    });
+  }
+}
+
 
       await tx.post.update({
         where: {
@@ -132,6 +164,7 @@ export async function POST(
       },
       { status: 201 }
     );
+    
   } catch (error) {
     console.error("CREATE_COMMENT_ERROR:", error);
 
@@ -249,3 +282,4 @@ export async function GET(
     );
   }
 }
+

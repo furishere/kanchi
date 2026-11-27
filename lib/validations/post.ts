@@ -87,3 +87,4 @@ export const updatePostSchema = z.object({
 export const reactionSchema = z.object({
   type: z.enum(["FELT", "WARM"]),
 });
+

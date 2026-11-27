@@ -56,6 +56,7 @@ export async function POST(request: NextRequest) {
         createdAt: true,
       },
     });
+    
 
     return NextResponse.json(
       {
@@ -77,6 +78,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    const user = await getCurrentUser();
     const searchParams = request.nextUrl.searchParams;
 
     const validation = getPostsQuerySchema.safeParse({
@@ -121,16 +123,34 @@ export async function GET(request: NextRequest) {
         },
       ],
 
-      select: {
-        id: true,
-        body: true,
-        mood: true,
-        contentWarning: true,
-        feltCount: true,
-        warmCount: true,
-        replyCount: true,
-        createdAt: true,
-      },
+      
+select: {
+  id: true,
+  body: true,
+  mood: true,
+  contentWarning: true,
+  feltCount: true,
+  warmCount: true,
+  replyCount: true,
+  createdAt: true,
+
+  _count: {
+    select: {
+      savedBy: true,
+    },
+  },
+
+  savedBy: {
+    where: {
+      userId: user?.id ?? "__anonymous__",
+    },
+    select: {
+      userId: true,
+    },
+    take: 1,
+  },
+},
+
     });
 
     const hasMore = posts.length > limit;
@@ -143,14 +163,23 @@ export async function GET(request: NextRequest) {
       ? data[data.length - 1].id
       : null;
 
+    const formattedPosts = data.map((post) => {
+  const { _count, savedBy, ...postData } = post;
+
+  return {
+    ...postData,
+    savedCount: _count.savedBy,
+    isSaved: savedBy.length > 0,
+  };
+});
+
     return NextResponse.json({
-      posts: data,
-      pagination: {
-        limit,
-        hasMore,
-        nextCursor,
-      },
-    });
+  posts: formattedPosts,
+  pagination: {
+    hasMore,
+    nextCursor,
+  },
+});
   } catch (error) {
     console.error("GET_POSTS_ERROR:", error);
 

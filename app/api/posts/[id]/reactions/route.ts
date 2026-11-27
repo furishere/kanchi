@@ -95,6 +95,41 @@ export async function POST(
           },
         });
 
+const postAuthor = await tx.post.findUnique({
+  where: {
+    id: postId,
+  },
+  select: {
+    authorId: true,
+  },
+});
+
+if (postAuthor && postAuthor.authorId !== user.id) {
+  const notificationPreference = await tx.user.findUnique({
+    where: {
+      id: postAuthor.authorId,
+    },
+    select: {
+      notifyReactions: true,
+    },
+  });
+
+  if (notificationPreference?.notifyReactions) {
+    await tx.notification.create({
+      data: {
+        userId: postAuthor.authorId,
+        type,
+        postId,
+        message:
+          type === "FELT"
+            ? "Someone felt your post."
+            : "Someone found warmth in your post.",
+      },
+    });
+  }
+}
+
+
         reacted = true;
       }
 

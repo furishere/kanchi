@@ -80,37 +80,25 @@ model User {
   reports Report[]
 }
 
+
 model Session {
-  id String @id @default(cuid())
-  userId String 
+  id               String    @id @default(cuid())
+  userId           String
 
-  refreshTokenHash String @unique
+  refreshTokenHash String    @unique
 
-  expiresAt DateTime
-  revokedAt DateTime? 
+  expiresAt        DateTime
+  revokedAt        DateTime?
 
-  userAgent String?
-  ipAddress String?
+  userAgent        String?
+  ipAddress        String?
 
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  refreshTokens RefreshToken[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
 
-model RefreshToken {
-  id        String    @id @default(cuid())
-  sessionId String
-  tokenHash String    @unique
-  expiresAt DateTime
-  usedAt    DateTime?
-  createdAt DateTime  @default(now())
-
-  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-
-  @@index([sessionId])
+  @@index([userId])
   @@index([expiresAt])
 }
 
@@ -163,6 +151,8 @@ model Comment {
   reports Report[]
 
   @@index([postId, createdAt(sort: Asc)])
+  @@index([authorId])
+  @@index([parentId])
 }
 
 model Reaction {
@@ -175,6 +165,7 @@ model Reaction {
   post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@id([userId, postId, type])
+  @@index([postId, type])
 }
 
 model SavedPost {
@@ -186,6 +177,7 @@ model SavedPost {
   post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@id([userId, postId])
+  @@index([userId, createdAt(sort: Desc)])
 }
 
 model Mute {
@@ -197,6 +189,7 @@ model Mute {
   mutedUser User @relation("Muted", fields: [mutedUserId], references: [id], onDelete: Cascade)
 
   @@id([userId, mutedUserId])
+  @@index([mutedUserId])
 }
 
 model Notification {
@@ -236,10 +229,14 @@ model Report {
 
   @@unique([reporterId, postId])
   @@unique([reporterId, commentId])
+  @@index([status, createdAt(sort: Desc)])
+  @@index([postId, status])
+  @@index([commentId, status])
 }
 
 model RateLimit {
   key String @id
   count Int @default(1)
   resetAt DateTime
+  @@index([resetAt])
 }
