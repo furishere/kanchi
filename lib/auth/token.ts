@@ -1,25 +1,96 @@
-import { randomBytes, createHash } from "crypto";
 
-export function generateRefreshToken(): string {
-    return randomBytes(64).toString("hex")
+import { SignJWT, jwtVerify } from "jose";
+
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+
+if (!ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET) {
+  throw new Error("JWT secrets are missing");
 }
 
-export function hashRefreshToken(token: string): string {
-    return createHash("sha256").update(token).digest("hex")
+const accessSecret = new TextEncoder().encode(
+  ACCESS_TOKEN_SECRET
+);
+
+const refreshSecret = new TextEncoder().encode(
+  REFRESH_TOKEN_SECRET
+);
+
+export interface TokenPayload {
+  userId: string;
+  sessionId: string;
 }
 
-export function verifyRefreshToken(
-    token: string,
-    hashedToken : string
-) : boolean {
-    const incomingHash = hashRefreshToken(token)
+export async function createAccessToken(
+  payload: TokenPayload
+): Promise<string> {
+  return new SignJWT({
+    userId: payload.userId,
+    sessionId: payload.sessionId,
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("15m")
+    .sign(accessSecret);
+}
 
-    const incomingBuffer = Buffer.from(incomingHash, "hex")
-    const storedBuffer = Buffer.from(hashedToken, "hex")
+export async function createRefreshToken(
+  payload: TokenPayload
+): Promise<string> {
+  return new SignJWT({
+    userId: payload.userId,
+    sessionId: payload.sessionId,
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("7d")
+    .sign(refreshSecret);
+}
 
-    if (incomingBuffer.length !== storedBuffer.length) {
-    return false;
+export async function verifyAccessToken(
+  token: string
+): Promise<TokenPayload | null> {
+  try {
+    const { payload } = await jwtVerify(token, accessSecret, {
+      algorithms: ["HS256"],
+    });
+
+    if (
+      typeof payload.userId !== "string" ||
+      typeof payload.sessionId !== "string"
+    ) {
+      return null;
+    }
+
+    return {
+      userId: payload.userId,
+      sessionId: payload.sessionId,
+    };
+  } catch {
+    return null;
   }
+}
 
-  return incomingBuffer.equals(storedBuffer);
+export async function verifyRefreshToken(
+  token: string
+): Promise<TokenPayload | null> {
+  try {
+    const { payload } = await jwtVerify(token, refreshSecret, {
+      algorithms: ["HS256"],
+    });
+
+    if (
+      typeof payload.userId !== "string" ||
+      typeof payload.sessionId !== "string"
+    ) {
+      return null;
+    }
+
+    return {
+      userId: payload.userId,
+      sessionId: payload.sessionId,
+    };
+  } catch {
+    return null;
+  }
 }
