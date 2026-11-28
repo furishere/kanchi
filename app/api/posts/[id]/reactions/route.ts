@@ -3,13 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/auth";
-import { reactionSchema } from "@/lib/validations/post";
 import { validateOrigin, csrfError } from "@/lib/auth/csrf";
+import { shouldCreateNotification } from "@/lib/notifications/notification-preferences";
+import { reactionSchema } from "@/lib/validations/post";
+
 
 interface RouteContext {
-  params: Promise<{
-    id: string;
-  }>;
+  params: Promise<{ id: string }>;
 }
 
 export async function POST(
@@ -33,12 +33,13 @@ export async function POST(
     const { id: postId } = await context.params;
 
     const body = await request.json();
+
     const validation = reactionSchema.safeParse(body);
 
     if (!validation.success) {
       return NextResponse.json(
         {
-          message: "Invalid reaction type",
+          message: "Invalid reaction data",
           errors: validation.error.flatten(),
         },
         { status: 400 }
@@ -55,11 +56,12 @@ export async function POST(
         },
         select: {
           id: true,
+          authorId: true,
         },
       });
 
       if (!post) {
-        return null;
+        return { error: "POST_NOT_FOUND" as const };
       }
 
       const existingReaction = await tx.reaction.findUnique({
@@ -72,8 +74,6 @@ export async function POST(
         },
       });
 
-      let reacted: boolean;
-
       if (existingReaction) {
         await tx.reaction.delete({
           where: {
@@ -85,103 +85,94 @@ export async function POST(
           },
         });
 
-        reacted = false;
-      } else {
-        await tx.reaction.create({
-          data: {
-            userId: user.id,
-            postId,
-            type,
+        await tx.post.update({
+          where: {
+            id: postId,
           },
+          data:
+            type === "FELT"
+              ? { feltCount: { decrement: 1 } }
+              : { warmCount: { decrement: 1 } },
         });
 
-const postAuthor = await tx.post.findUnique({
-  where: {
-    id: postId,
-  },
-  select: {
-    authorId: true,
-  },
-});
-
-if (postAuthor && postAuthor.authorId !== user.id) {
-  const notificationPreference = await tx.user.findUnique({
-    where: {
-      id: postAuthor.authorId,
-    },
-    select: {
-      notifyReactions: true,
-    },
-  });
-
-  if (notificationPreference?.notifyReactions) {
-    await tx.notification.create({
-      data: {
-        userId: postAuthor.authorId,
-        type,
-        postId,
-        message:
-          type === "FELT"
-            ? "Someone felt your post."
-            : "Someone found warmth in your post.",
-      },
-    });
-  }
-}
-
-
-        reacted = true;
+        return {
+          action: "REMOVED" as const,
+          type,
+        };
       }
 
-      const updatedPost = await tx.post.update({
-        where: {
-          id: postId,
-        },
+      await tx.reaction.create({
         data: {
-          ...(type === "FELT" && {
-            feltCount: {
-              [reacted ? "increment" : "decrement"]: 1,
-            },
-          }),
-          ...(type === "WARM" && {
-            warmCount: {
-              [reacted ? "increment" : "decrement"]: 1,
-            },
-          }),
-        },
-        select: {
-          feltCount: true,
-          warmCount: true,
+          userId: user.id,
+          postId,
+          type,
         },
       });
 
+      await tx.post.update({
+        where: {
+          id: postId,
+        },
+        data:
+          type === "FELT"
+            ? { feltCount: { increment: 1 } }
+            : { warmCount: { increment: 1 } },
+      });
+
+      if (post.authorId !== user.id) {
+        const recipient = await tx.user.findUnique({
+          where: {
+            id: post.authorId,
+          },
+          select: {
+            id: true,
+            notifyReactions: true,
+          },
+        });
+
+        if (
+          recipient &&
+          shouldCreateNotification(
+            {
+              notifyReplies: false,
+              notifyReactions: recipient.notifyReactions,
+            },
+            type
+          )
+        ) {
+          await tx.notification.create({
+            data: {
+              userId: recipient.id,
+              type,
+              postId,
+            },
+          });
+        }
+      }
+
       return {
-        reacted,
+        action: "ADDED" as const,
         type,
-        ...updatedPost,
       };
     });
 
-    if (!result) {
+    if ("error" in result) {
       return NextResponse.json(
         { message: "Post not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({
-      message: result.reacted
-        ? "Reaction added"
-        : "Reaction removed",
-      reaction: {
-        type: result.type,
-        reacted: result.reacted,
+    return NextResponse.json(
+      {
+        message:
+          result.action === "ADDED"
+            ? "Reaction added successfully"
+            : "Reaction removed successfully",
+        ...result,
       },
-      counts: {
-        feltCount: result.feltCount,
-        warmCount: result.warmCount,
-      },
-    });
+      { status: 200 }
+    );
   } catch (error) {
     console.error("REACTION_ERROR:", error);
 
@@ -221,11 +212,10 @@ export async function GET(
 
     const user = await getCurrentUser();
 
-    let felt = false;
-    let warm = false;
+    let userReactions: { type: "FELT" | "WARM" }[] = [];
 
     if (user) {
-      const reactions = await prisma.reaction.findMany({
+      userReactions = await prisma.reaction.findMany({
         where: {
           userId: user.id,
           postId,
@@ -234,25 +224,18 @@ export async function GET(
           type: true,
         },
       });
-
-      felt = reactions.some(
-        (reaction) => reaction.type === "FELT"
-      );
-
-      warm = reactions.some(
-        (reaction) => reaction.type === "WARM"
-      );
     }
 
     return NextResponse.json({
-      postId,
-      counts: {
+      reactions: {
         feltCount: post.feltCount,
         warmCount: post.warmCount,
-      },
-      userReactions: {
-        felt,
-        warm,
+        hasFelt: userReactions.some(
+          (reaction) => reaction.type === "FELT"
+        ),
+        hasWarmed: userReactions.some(
+          (reaction) => reaction.type === "WARM"
+        ),
       },
     });
   } catch (error) {

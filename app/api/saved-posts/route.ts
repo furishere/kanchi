@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/auth";
+import { getFeedPreferences } from "@/lib/posts/feed-preferences";
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,21 +18,44 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams;
 
-    const limit = Math.min(
-      Math.max(Number(searchParams.get("limit") ?? 20), 1),
-      50
-    );
-
+    const rawLimit = searchParams.get("limit");
     const cursor = searchParams.get("cursor");
+
+    const limit = rawLimit === null ? 20 : Number(rawLimit);
+
+    if (
+      !Number.isInteger(limit) ||
+      limit < 1 ||
+      limit > 50
+    ) {
+      return NextResponse.json(
+        {
+          message: "Invalid limit. Use a number between 1 and 50.",
+        },
+        { status: 400 }
+      );
+    }
+
+    const preferences = await getFeedPreferences(user.id);
 
     const savedPosts = await prisma.savedPost.findMany({
       where: {
         userId: user.id,
         post: {
           status: "VISIBLE",
+          ...(preferences.hiddenMoods.length > 0 && {
+            mood: {
+              notIn: preferences.hiddenMoods,
+            },
+          }),
+          authorId: {
+            notIn: preferences.mutedUserIds,
+          },
         },
       },
+
       take: limit + 1,
+
       ...(cursor && {
         cursor: {
           userId_postId: {
@@ -41,12 +65,15 @@ export async function GET(request: NextRequest) {
         },
         skip: 1,
       }),
+
       orderBy: [
         { createdAt: "desc" },
         { postId: "desc" },
       ],
+
       select: {
         createdAt: true,
+
         post: {
           select: {
             id: true,
@@ -57,24 +84,44 @@ export async function GET(request: NextRequest) {
             warmCount: true,
             replyCount: true,
             createdAt: true,
+
+            _count: {
+              select: {
+                savedBy: true,
+              },
+            },
           },
         },
       },
     });
 
+    // Pagination
     const hasMore = savedPosts.length > limit;
 
-    const data = hasMore
+    const paginatedPosts = hasMore
       ? savedPosts.slice(0, limit)
       : savedPosts;
+
+    // Format response
+    const data = paginatedPosts.map((saved) => ({
+      savedAt: saved.createdAt,
+      ...saved.post,
+      savedCount: saved.post._count.savedBy,
+      isSaved: true,
+      shouldBlur:
+        preferences.blurCw &&
+        Boolean(saved.post.contentWarning),
+    }));
+
+    const nextCursor = hasMore
+      ? data[data.length - 1]?.id ?? null
+      : null;
 
     return NextResponse.json({
       savedPosts: data,
       pagination: {
         hasMore,
-        nextCursor: hasMore
-          ? data[data.length - 1].post.id
-          : null,
+        nextCursor,
       },
     });
   } catch (error) {

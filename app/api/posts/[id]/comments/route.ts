@@ -4,7 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { validateOrigin, csrfError } from "@/lib/auth/csrf";
-import { createCommentSchema, getCommentsQuerySchema } from "@/lib/validations/comment";
+import { shouldCreateNotification } from "@/lib/notifications/notification-preferences";
+import {
+  createCommentSchema,
+  getCommentsQuerySchema,
+} from "@/lib/validations/comment";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -14,11 +18,12 @@ export async function POST(
   request: NextRequest,
   context: RouteContext
 ) {
-    
   try {
+
     if (!validateOrigin(request)) {
       return csrfError();
     }
+
 
     const user = await getCurrentUser();
 
@@ -48,6 +53,7 @@ export async function POST(
     const { body: commentBody, parentId } = validation.data;
 
     const result = await prisma.$transaction(async (tx) => {
+ 
       const post = await tx.post.findFirst({
         where: {
           id: postId,
@@ -55,12 +61,14 @@ export async function POST(
         },
         select: {
           id: true,
+          authorId: true,
         },
       });
 
       if (!post) {
         return { error: "POST_NOT_FOUND" as const };
       }
+
 
       if (parentId) {
         const parentComment = await tx.comment.findFirst({
@@ -79,6 +87,7 @@ export async function POST(
         }
       }
 
+     
       const comment = await tx.comment.create({
         data: {
           postId,
@@ -95,38 +104,8 @@ export async function POST(
           createdAt: true,
         },
       });
-      
-const recipient = parentId
-  ? await tx.comment.findUnique({
-      where: { id: parentId },
-      select: { authorId: true },
-    })
-  : await tx.post.findUnique({
-      where: { id: postId },
-      select: { authorId: true },
-    });
 
-if (recipient && recipient.authorId !== user.id) {
-  const notificationEnabled = await tx.user.findUnique({
-    where: { id: recipient.authorId },
-    select: { notifyReplies: true },
-  });
-
-  if (notificationEnabled?.notifyReplies) {
-    await tx.notification.create({
-      data: {
-        userId: recipient.authorId,
-        type: "REPLY",
-        postId,
-        commentId: comment.id,
-        message: "Someone replied to your post.",
-        quote: commentBody.slice(0, 150),
-      },
-    });
-  }
-}
-
-
+  
       await tx.post.update({
         where: {
           id: postId,
@@ -137,6 +116,52 @@ if (recipient && recipient.authorId !== user.id) {
           },
         },
       });
+
+
+      const recipient = parentId
+        ? await tx.comment.findUnique({
+            where: {
+              id: parentId,
+            },
+            select: {
+              authorId: true,
+            },
+          })
+        : { authorId: post.authorId };
+
+      const recipientId = recipient?.authorId;
+
+      if (recipientId && recipientId !== user.id) {
+        const recipientUser = await tx.user.findUnique({
+          where: {
+            id: recipientId,
+          },
+          select: {
+            id: true,
+            notifyReplies: true,
+          },
+        });
+
+        if (
+          recipientUser &&
+          shouldCreateNotification(
+            {
+              notifyReplies: recipientUser.notifyReplies,
+              notifyReactions: false,
+            },
+            "REPLY"
+          )
+        ) {
+          await tx.notification.create({
+            data: {
+              userId: recipientUser.id,
+              type: "REPLY",
+              postId,
+              commentId: comment.id,
+            },
+          });
+        }
+      }
 
       return {
         comment,
@@ -164,7 +189,6 @@ if (recipient && recipient.authorId !== user.id) {
       },
       { status: 201 }
     );
-    
   } catch (error) {
     console.error("CREATE_COMMENT_ERROR:", error);
 
@@ -174,7 +198,6 @@ if (recipient && recipient.authorId !== user.id) {
     );
   }
 }
-
 
 export async function GET(
   request: NextRequest,
@@ -219,6 +242,7 @@ export async function GET(
 
     const { cursor, limit } = validation.data;
 
+
     const comments = await prisma.comment.findMany({
       where: {
         postId,
@@ -226,26 +250,34 @@ export async function GET(
         parentId: null,
       },
       take: limit + 1,
+
       ...(cursor && {
-        cursor: { id: cursor },
+        cursor: {
+          id: cursor,
+        },
         skip: 1,
       }),
+
       orderBy: [
         { createdAt: "asc" },
         { id: "asc" },
       ],
+
       select: {
         id: true,
         body: true,
         createdAt: true,
+
         replies: {
           where: {
             status: "VISIBLE",
           },
+
           orderBy: [
             { createdAt: "asc" },
             { id: "asc" },
           ],
+
           select: {
             id: true,
             body: true,
@@ -282,4 +314,3 @@ export async function GET(
     );
   }
 }
-

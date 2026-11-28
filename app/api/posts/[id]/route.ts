@@ -1,6 +1,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
+import { getFeedPreferences } from "@/lib/posts/feed-preferences";
+
 import { prisma } from "@/lib/prisma";
 import { updatePostSchema } from "@/lib/validations/post";
 import { getCurrentUser } from "@/lib/auth/auth";
@@ -12,55 +14,58 @@ interface RouteContext {
   }>;
 }
 
+
 export async function GET(
   request: NextRequest,
-  context: RouteContext
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
 
-const user = await getCurrentUser();
-    const { id } = await context.params;
-
-    if (!id) {
-      return NextResponse.json(
-        { message: "Post ID is required" },
-        { status: 400 }
-      );
-    }
+    const user = await getCurrentUser();
+    const preferences = await getFeedPreferences(user?.id);
 
     const post = await prisma.post.findFirst({
-  where: {
-    id,
-    status: "VISIBLE",
-  },
-  select: {
-    id: true,
-    body: true,
-    mood: true,
-    contentWarning: true,
-    feltCount: true,
-    warmCount: true,
-    replyCount: true,
-    createdAt: true,
-    updatedAt: true,
-
-    _count: {
-      select: {
-        savedBy: true,
-      },
-    },
-
-    savedBy: {
       where: {
-        userId: user?.id ?? "__anonymous__",
+        id,
+        status: "VISIBLE",
+        mood: {
+          notIn: preferences.hiddenMoods,
+        },
+        authorId: {
+          notIn: preferences.mutedUserIds,
+        },
       },
       select: {
-        userId: true,
+        id: true,
+        body: true,
+        mood: true,
+        contentWarning: true,
+        status: true,
+        feltCount: true,
+        warmCount: true,
+        replyCount: true,
+        createdAt: true,
+
+        _count: {
+          select: {
+            savedBy: true,
+          },
+        },
+
+        ...(user && {
+          savedBy: {
+            where: {
+              userId: user.id,
+            },
+            select: {
+              userId: true,
+            },
+            take: 1,
+          },
+        }),
       },
-      take: 1,
-    },
-  },
-});
+    });
 
     if (!post) {
       return NextResponse.json(
@@ -69,15 +74,22 @@ const user = await getCurrentUser();
       );
     }
 
-const { _count, savedBy, ...postData } = post;
+    const { _count, ...postData } = post;
 
-return NextResponse.json({
-  post: {
-    ...postData,
-    savedCount: _count.savedBy,
-    isSaved: savedBy.length > 0,
-  },
-});
+    const savedBy = "savedBy" in post
+      ? post.savedBy
+      : [];
+
+    return NextResponse.json({
+      post: {
+        ...postData,
+        savedCount: _count.savedBy,
+        isSaved: savedBy.length > 0,
+        shouldBlur: Boolean(
+          preferences.blurCw && post.contentWarning
+        ),
+      },
+    });
   } catch (error) {
     console.error("GET_POST_ERROR:", error);
 
@@ -87,6 +99,7 @@ return NextResponse.json({
     );
   }
 }
+
 
 
 export async function PATCH(

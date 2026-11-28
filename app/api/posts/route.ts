@@ -1,6 +1,9 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
+import { paginateResults } from "@/lib/utils/pagination";
+
+import { getFeedPreferences } from "@/lib/posts/feed-preferences";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { createPostSchema, getPostsQuerySchema } from "@/lib/validations/post";
@@ -79,7 +82,8 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser();
-    const searchParams = request.nextUrl.searchParams;
+    
+    const searchParams = request.nextUrl.searchParams
 
     const validation = getPostsQuerySchema.safeParse({
       cursor: searchParams.get("cursor") ?? undefined,
@@ -98,12 +102,36 @@ export async function GET(request: NextRequest) {
     }
 
     const { cursor, limit, mood } = validation.data;
+     
+    const preferences = await getFeedPreferences(user?.id);
+
+  const hiddenMoodRequested =
+  mood !== undefined &&
+  preferences.hiddenMoods.includes(mood);
 
     const posts = await prisma.post.findMany({
       where: {
-        status: "VISIBLE",
-        ...(mood && { mood }),
+  status: "VISIBLE",
+
+  ...(hiddenMoodRequested && {
+    id: "__no_matching_post__",
+  }),
+
+  ...(!hiddenMoodRequested &&
+    preferences.hiddenMoods.length > 0 && {
+      mood: {
+        notIn: preferences.hiddenMoods,
       },
+    }),
+
+  ...(preferences.mutedUserIds.length > 0 && {
+    authorId: {
+      notIn: preferences.mutedUserIds,
+    },
+  }),
+
+  ...(mood && !hiddenMoodRequested && { mood }),
+},
 
       take: limit + 1,
 
@@ -124,6 +152,7 @@ export async function GET(request: NextRequest) {
       ],
 
       
+
 select: {
   id: true,
   body: true,
@@ -140,46 +169,63 @@ select: {
     },
   },
 
-  savedBy: {
-    where: {
-      userId: user?.id ?? "__anonymous__",
+  ...(user && {
+    savedBy: {
+      where: {
+        userId: user.id,
+      },
+      select: {
+        userId: true,
+      },
+      take: 1,
     },
-    select: {
-      userId: true,
-    },
-    take: 1,
-  },
+  }),
 },
+
 
     });
 
-    const hasMore = posts.length > limit;
+    
+const hasMore = posts.length > limit;
 
-    const data = hasMore
-      ? posts.slice(0, limit)
-      : posts;
+const data = hasMore
+  ? posts.slice(0, limit)
+  : posts;
 
-    const nextCursor = hasMore
-      ? data[data.length - 1].id
-      : null;
+const nextCursor = hasMore
+  ? data[data.length - 1].id
+  : null;
 
-    const formattedPosts = data.map((post) => {
-  const { _count, savedBy, ...postData } = post;
+
+const pagination = paginateResults(posts, limit);
+
+const formattedPosts = pagination.data.map((post) => {
+  const { _count, ...postData } = post;
+
+  const savedBy = "savedBy" in post
+    ? post.savedBy
+    : [];
 
   return {
     ...postData,
     savedCount: _count.savedBy,
     isSaved: savedBy.length > 0,
+    shouldBlur: Boolean(
+      preferences.blurCw && post.contentWarning
+    ),
   };
 });
 
-    return NextResponse.json({
+
+    
+return NextResponse.json({
   posts: formattedPosts,
   pagination: {
-    hasMore,
-    nextCursor,
+    hasMore: pagination.hasMore,
+    nextCursor: pagination.nextCursor,
   },
 });
+
   } catch (error) {
     console.error("GET_POSTS_ERROR:", error);
 

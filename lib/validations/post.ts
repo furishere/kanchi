@@ -88,3 +88,31 @@ export const reactionSchema = z.object({
   type: z.enum(["FELT", "WARM"]),
 });
 
+
+export const explorePostsQuerySchema = z.object({
+  cursor: z.string().min(1).optional(),
+
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(50)
+    .default(20),
+
+  mood: z.enum([
+    "lonely",
+    "anxious",
+    "hopeful",
+    "grateful",
+    "angry",
+    "numb",
+    "heartbroken",
+    "relieved",
+  ]).optional(),
+
+  sort: z.enum(["recent", "trending"]).default("recent"),
+});
+
+export type ExplorePostsQuery = z.infer<
+  typeof explorePostsQuerySchema
+>;
